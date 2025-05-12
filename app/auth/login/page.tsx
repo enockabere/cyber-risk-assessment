@@ -241,7 +241,7 @@ export default function LoginPage() {
             <div className="mt-4 text-center text-xs text-gray-500">
               Don't have an account?{" "}
               <a
-                href="#"
+                href="/auth/register"
                 className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors duration-200 hover:underline"
               >
                 Request access
