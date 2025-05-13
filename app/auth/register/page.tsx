@@ -47,6 +47,19 @@ export default function RegisterPage() {
       setError("Passwords don't match");
       return false;
     }
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters long");
+      return false;
+    }
+    if (
+      !/[A-Z]/.test(password) ||
+      !/[a-z]/.test(password) ||
+      !/\d/.test(password)
+    ) {
+      setError("Password must include uppercase, lowercase, and a number");
+      return false;
+    }
+
     return true;
   };
 
@@ -82,7 +95,6 @@ export default function RegisterPage() {
 
   return (
     <div className="h-screen flex flex-col md:flex-row bg-gradient-to-br from-gray-50 to-gray-100 text-gray-800 font-sans overflow-hidden">
-      {/* Left panel with feature cards - matching login page */}
       <div
         className={`hidden md:flex w-full md:w-1/2 bg-gradient-to-br from-indigo-700 to-indigo-900 text-white flex-col justify-center p-6 space-y-4 transition-all duration-700 ease-out ${
           mounted ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"
@@ -225,14 +237,32 @@ export default function RegisterPage() {
                 </Label>
                 <div className="relative">
                   <KeyRound className="absolute left-2 top-2 h-4 w-4 text-gray-400 group-focus-within:text-indigo-500 transition-colors duration-200" />
+
                   <Input
                     id="confirmPassword"
                     type="password"
                     placeholder="••••••••"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="pl-8 h-9 text-sm rounded-md bg-gray-50 focus:bg-white border-gray-200 focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
+                    className={`pl-8 pr-8 h-9 text-sm rounded-md bg-gray-50 focus:bg-white border-gray-200 focus:ring-2 focus:ring-indigo-500 transition-all duration-200 ${
+                      confirmPassword && confirmPassword !== password
+                        ? "border-red-400"
+                        : confirmPassword === password && confirmPassword
+                        ? "border-green-500"
+                        : ""
+                    }`}
                   />
+
+                  {/* ✅ Icon on the right */}
+                  {confirmPassword && (
+                    <div className="absolute right-2 top-2">
+                      {confirmPassword === password ? (
+                        <span className="text-green-600">✔</span>
+                      ) : (
+                        <span className="text-red-500">❌</span>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 
