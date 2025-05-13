@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { toast } from "react-toastify";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -79,15 +80,16 @@ export default function RegisterPage() {
       });
 
       if (res.ok) {
+        toast.success("Account created! Redirecting...");
         setTimeout(() => {
           router.push("/auth/login");
-        }, 800);
+        }, 1500);
       } else {
         const data = await res.json();
         setError(data.message || "Registration failed");
       }
     } catch (err) {
-      setError("An unexpected error occurred");
+      toast.error("An unexpected error occurred");
     } finally {
       setLoading(false);
     }
@@ -130,8 +132,6 @@ export default function RegisterPage() {
           ))}
         </div>
       </div>
-
-      {/* Right registration form - compact version */}
       <div
         className={`w-full md:w-1/2 flex items-center justify-center p-4 transition-all duration-700 ease-out ${
           mounted ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"
@@ -252,8 +252,6 @@ export default function RegisterPage() {
                         : ""
                     }`}
                   />
-
-                  {/* ✅ Icon on the right */}
                   {confirmPassword && (
                     <div className="absolute right-2 top-2">
                       {confirmPassword === password ? (

@@ -1,15 +1,14 @@
+// app/api/auth/[...nextauth]/route.ts
 import NextAuth, { type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import EmailProvider from "next-auth/providers/email";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/app/lib/prisma";
 import { compare } from "bcryptjs";
-import { SessionStrategy } from "next-auth";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   session: {
-    strategy: "jwt" satisfies SessionStrategy,
+    strategy: "jwt",
   },
   providers: [
     CredentialsProvider({
@@ -28,18 +27,37 @@ export const authOptions: NextAuthOptions = {
         const isValid = await compare(credentials!.password, user.password);
         if (!isValid) return null;
 
-        return user;
+        // ✅ Include id for use in JWT and session
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+        } as any; // <-- Type assertion to avoid TS error
       },
-    }),
-
-    EmailProvider({
-      server: process.env.EMAIL_SERVER,
-      from: process.env.EMAIL_FROM,
     }),
   ],
   pages: {
     signIn: "/auth/login",
-    verifyRequest: "/auth/verify-request",
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token) {
+        session.user = {
+          id: token.id as string,
+          email: token.email as string,
+          name: token.name as string,
+        };
+      }
+      return session;
+    },
   },
 };
 

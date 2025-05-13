@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { toast } from "react-toastify";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -58,16 +59,18 @@ export default function LoginPage() {
         password,
       });
 
+      console.log("🔐 signIn response:", res);
+
       if (res?.ok) {
-        setTimeout(() => {
-          router.push("/dashboard");
-        }, 800);
+        localStorage.setItem("login_success", "1");
+        router.push("/dashboard");
       } else {
-        setError("Invalid email or password");
+        toast.error("Invalid email or password");
         setLoading(false);
       }
     } catch (err) {
-      setError("Something went wrong");
+      console.error("Login error:", err);
+      toast.error("Something went wrong. Try again.");
       setLoading(false);
     }
   };
@@ -75,6 +78,7 @@ export default function LoginPage() {
   return (
     <div className="h-screen flex flex-col md:flex-row bg-gradient-to-br from-gray-50 to-gray-100 text-gray-800 font-sans overflow-hidden">
       {/* Left panel with feature cards - more compact */}
+
       <div
         className={`hidden md:flex w-full md:w-1/2 bg-gradient-to-br from-indigo-700 to-indigo-900 text-white flex-col justify-center p-6 space-y-4 transition-all duration-700 ease-out ${
           mounted ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"

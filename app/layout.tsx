@@ -1,5 +1,7 @@
 import "./globals.css";
 import { Inter, Poppins } from "next/font/google";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const poppins = Poppins({
@@ -21,6 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
       <body className="font-sans bg-background text-foreground">
+        <ToastContainer position="top-right" autoClose={3000} />
         {children}
       </body>
     </html>
