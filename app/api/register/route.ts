@@ -3,9 +3,9 @@ import prisma from "@/app/lib/prisma";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-  const { email, password, name } = await req.json(); // 👈 include `name`
-  const existingUser = await prisma.user.findUnique({ where: { email } });
+  const { email, password, name } = await req.json();
 
+  const existingUser = await prisma.user.findUnique({ where: { email } });
   if (existingUser) {
     return NextResponse.json(
       { message: "Email already registered" },
@@ -19,8 +19,9 @@ export async function POST(req: Request) {
       email,
       name,
       password: hashed,
+      role: "respondent",
     },
   });
 
-  return NextResponse.json(user);
+  return NextResponse.json({ message: "User created", user });
 }

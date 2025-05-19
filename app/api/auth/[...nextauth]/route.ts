@@ -1,9 +1,35 @@
-// app/api/auth/[...nextauth]/route.ts
-import NextAuth, { type NextAuthOptions } from "next-auth";
+import NextAuth, { type NextAuthOptions, type User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/app/lib/prisma";
 import { compare } from "bcryptjs";
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+      email: string;
+      name: string | null;
+      role: string;
+    };
+  }
+
+  interface User {
+    id: string;
+    email: string;
+    name: string | null;
+    role: string;
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: string;
+    email: string;
+    name: string | null;
+    role: string;
+  }
+}
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -17,22 +43,24 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req): Promise<User | null> {
+        if (!credentials?.email || !credentials?.password) return null;
+
         const user = await prisma.user.findUnique({
-          where: { email: credentials?.email },
+          where: { email: credentials.email },
         });
 
         if (!user) return null;
 
-        const isValid = await compare(credentials!.password, user.password);
+        const isValid = await compare(credentials.password, user.password);
         if (!isValid) return null;
 
-        // ✅ Include id for use in JWT and session
         return {
           id: user.id,
           email: user.email,
-          name: user.name,
-        } as any; // <-- Type assertion to avoid TS error
+          name: user.name ?? null,
+          role: user.role,
+        };
       },
     }),
   ],
@@ -45,15 +73,17 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
+        token.role = user.role;
       }
       return token;
     },
     async session({ session, token }) {
       if (token) {
         session.user = {
-          id: token.id as string,
-          email: token.email as string,
-          name: token.name as string,
+          id: token.id,
+          email: token.email,
+          name: token.name,
+          role: token.role,
         };
       }
       return session;

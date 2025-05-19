@@ -257,8 +257,6 @@ export default function LoginPage() {
     </div>
   );
 }
-
-// More concise feature data
 const features = [
   {
     icon: <ShieldCheck className="text-indigo-200 w-4 h-4" />,
