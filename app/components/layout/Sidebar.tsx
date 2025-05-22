@@ -13,7 +13,7 @@ const navLinks = [
     icon: <LayoutDashboard className="w-4 h-4" />,
   },
   {
-    href: "/dashboard/settings",
+    href: "/dashboard/users", // ✅ updated path
     label: "User Management",
     icon: <Settings className="w-4 h-4" />,
   },
@@ -25,7 +25,7 @@ export default function Sidebar() {
   const SidebarContent = () => (
     <div className="flex flex-col h-full bg-white border-r border-gray-200 w-64 p-4 space-y-2">
       <div className="text-xl font-bold text-indigo-600 px-2">CRAP</div>
-      <nav className="flex-1 flex flex-col space-y-1">
+      <nav className="flex-1 flex flex-col space-y-1 mt-6">
         {navLinks.map(({ href, label, icon }) => (
           <Link
             key={href}
@@ -41,6 +41,7 @@ export default function Sidebar() {
           </Link>
         ))}
       </nav>
+
       <Button
         variant="ghost"
         className="text-red-500 hover:bg-red-100 justify-start"
@@ -53,7 +54,6 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Mobile Sidebar Trigger */}
       <div className="md:hidden p-4">
         <Sheet>
           <SheetTrigger asChild>
