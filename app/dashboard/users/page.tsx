@@ -14,6 +14,8 @@ import {
 } from "@/app/components/users/UserModals";
 import { AppUser } from "@/app/types/users";
 import { useTopbar } from "@/app/context/TopbarContext";
+import { useBreadcrumbs } from "@/app/context/BreadcrumbContext";
+import UserCreateModal from "@/app/components/users/UserCreateModal";
 
 export default function UsersPage() {
   const [users, setUsers] = useState<AppUser[]>([]);
@@ -21,11 +23,18 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
+
   const { setTitle } = useTopbar();
+  const { setBreadcrumbs } = useBreadcrumbs();
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   useEffect(() => {
     setTitle("User Management");
-  }, [setTitle]);
+    setBreadcrumbs([
+      { label: "Dashboard", href: "/dashboard" },
+      { label: "Users", href: "/dashboard/users" },
+    ]);
+  }, []);
 
   useEffect(() => {
     async function fetchUsers() {
@@ -114,8 +123,6 @@ export default function UsersPage() {
           </div>
         </div>
       </div>
-
-      {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <UserStatsCard
           title="Total Users"
@@ -183,7 +190,8 @@ export default function UsersPage() {
             </Button>
             <Button
               size="sm"
-              className="bg-indigo-600 hover:bg-indigo-700 text-white transition-colors shadow-sm hover:shadow-md"
+              onClick={() => setShowCreateModal(true)}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white"
             >
               <Plus className="h-4 w-4 mr-2" />
               Add User
@@ -214,6 +222,11 @@ export default function UsersPage() {
           />
         </CardContent>
       </Card>
+      <UserCreateModal
+        open={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onCreate={(newUser) => setUsers((prev) => [...prev, newUser])}
+      />
     </div>
   );
 }

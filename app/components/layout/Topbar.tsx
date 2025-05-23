@@ -2,7 +2,15 @@
 
 import { useSession, signOut } from "next-auth/react";
 import { useTopbar } from "@/app/context/TopbarContext";
-import { UserCircle, School, ChevronDown, LogOut, User } from "lucide-react";
+import { useBreadcrumbs } from "@/app/context/BreadcrumbContext";
+import {
+  UserCircle,
+  School,
+  ChevronDown,
+  LogOut,
+  User,
+  ChevronRight,
+} from "lucide-react";
 import Link from "next/link";
 import {
   DropdownMenu,
@@ -15,16 +23,40 @@ import {
 
 export default function Topbar() {
   const { title } = useTopbar();
+  const { breadcrumbs } = useBreadcrumbs(); // ✅ FIXED: get breadcrumbs from context
   const { data: session } = useSession();
   const user = session?.user;
   const role = user?.role || "Unknown";
 
   return (
     <header className="w-full bg-gradient-to-r from-indigo-50 to-white border-b border-indigo-100 px-6 py-4 flex items-center justify-between shadow-sm">
-      <h1 className="text-2xl font-bold text-indigo-900 tracking-tight">
-        {title}
-      </h1>
+      {/* Title & Breadcrumbs */}
+      <div className="flex flex-col gap-1">
+        <h4 className="text-2xl font-bold text-indigo-900 tracking-tight">
+          {title}
+        </h4>
+        <nav className="flex items-center text-sm text-gray-500">
+          {breadcrumbs.map((crumb, index) => (
+            <span key={index} className="flex items-center">
+              {index > 0 && (
+                <ChevronRight className="w-4 h-4 text-gray-400 mx-1" />
+              )}
+              {crumb.href ? (
+                <Link
+                  href={crumb.href}
+                  className="hover:underline text-indigo-600 hover:text-indigo-800"
+                >
+                  {crumb.label}
+                </Link>
+              ) : (
+                <span className="text-gray-600">{crumb.label}</span>
+              )}
+            </span>
+          ))}
+        </nav>
+      </div>
 
+      {/* Profile Dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger className="flex items-center gap-2 outline-none">
           {role.toLowerCase() === "respondent" && (
