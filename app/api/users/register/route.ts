@@ -20,12 +20,15 @@ export async function POST(req: Request) {
       name,
       password: hashed,
       role: ["admin", "respondent"].includes(role) ? role : "respondent",
+      status: "active",
     },
     select: {
       id: true,
       email: true,
       name: true,
       role: true,
+      status: true,
+      createdAt: true,
     },
   });
 

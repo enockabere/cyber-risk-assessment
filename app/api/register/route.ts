@@ -32,12 +32,15 @@ export async function POST(req: Request) {
         name,
         password: hashed,
         role: cleanRole,
+        status: "active",
       },
       select: {
         id: true,
         name: true,
         email: true,
         role: true,
+        status: true,
+        createdAt: true,
       },
     });
 

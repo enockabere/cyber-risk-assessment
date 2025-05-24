@@ -6,23 +6,21 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { UserStatsCard } from "@/app/components/users/UserStatsCard";
 import { UserTable } from "@/app/components/users/UserTable";
-import { UserFilters } from "@/app/components/users/UserFilters";
+
 import {
   showUserViewModal,
   showUserEditModal,
-  showUserDeleteModal,
 } from "@/app/components/users/UserModals";
 import { AppUser } from "@/app/types/users";
 import { useTopbar } from "@/app/context/TopbarContext";
 import { useBreadcrumbs } from "@/app/context/BreadcrumbContext";
 import UserCreateModal from "@/app/components/users/UserCreateModal";
+import Swal from "sweetalert2";
 
 export default function UsersPage() {
   const [users, setUsers] = useState<AppUser[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<AppUser[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [roleFilter, setRoleFilter] = useState("all");
 
   const { setTitle } = useTopbar();
   const { setBreadcrumbs } = useBreadcrumbs();
@@ -32,7 +30,7 @@ export default function UsersPage() {
     setTitle("User Management");
     setBreadcrumbs([
       { label: "Dashboard", href: "/dashboard" },
-      { label: "Users", href: "/dashboard/users" },
+      { label: "Users", href: "/dashboard/admin/users" },
     ]);
   }, []);
 
@@ -40,28 +38,10 @@ export default function UsersPage() {
     async function fetchUsers() {
       try {
         const res = await fetch("/api/users");
+        if (!res.ok) throw new Error("Failed to fetch users");
         const data = await res.json();
-        const enhancedData = data.map((user: AppUser) => ({
-          ...user,
-          status:
-            Math.random() > 0.2
-              ? "active"
-              : Math.random() > 0.5
-              ? "inactive"
-              : "pending",
-          createdAt: new Date(
-            Date.now() - Math.random() * 90 * 24 * 60 * 60 * 1000
-          ).toISOString(),
-          lastLogin:
-            Math.random() > 0.3
-              ? new Date(
-                  Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000
-                ).toISOString()
-              : null,
-        }));
-
-        setUsers(enhancedData);
-        setFilteredUsers(enhancedData);
+        setUsers(data);
+        setFilteredUsers(data);
       } catch (error) {
         console.error("Failed to load users:", error);
       } finally {
@@ -72,35 +52,32 @@ export default function UsersPage() {
     fetchUsers();
   }, []);
 
-  useEffect(() => {
-    let filtered = users;
-
-    if (searchTerm) {
-      filtered = filtered.filter(
-        (user) =>
-          user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          user.email.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    if (roleFilter !== "all") {
-      filtered = filtered.filter((user) => user.role === roleFilter);
-    }
-
-    setFilteredUsers(filtered);
-  }, [searchTerm, roleFilter, users]);
-
   const handleEdit = (user: AppUser) => {
-    showUserEditModal(user, (updatedUser) => {
-      setUsers(
-        users.map((u) => (u.id === user.id ? { ...u, ...updatedUser } : u))
-      );
-    });
-  };
+    showUserEditModal(user, async (updatedFields) => {
+      try {
+        const res = await fetch(`/api/users/${user.id}/edit`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updatedFields),
+        });
 
-  const handleDelete = (user: AppUser) => {
-    showUserDeleteModal(user, () => {
-      setUsers(users.filter((u) => u.id !== user.id));
+        if (!res.ok) throw new Error("Failed to update user");
+
+        const updatedUser = await res.json();
+
+        setUsers((prevUsers) => {
+          const newUsers = prevUsers.map((u) =>
+            u.id === updatedUser.id ? updatedUser : u
+          );
+          setFilteredUsers(newUsers);
+          return newUsers;
+        });
+
+        Swal.fire("Success", "User updated successfully", "success");
+      } catch (error) {
+        console.error("Failed to update user:", error);
+        Swal.fire("Error", "Failed to update user", "error");
+      }
     });
   };
 
@@ -200,15 +177,6 @@ export default function UsersPage() {
         </CardHeader>
 
         <CardContent className="p-0">
-          <UserFilters
-            searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
-            roleFilter={roleFilter}
-            onRoleFilterChange={setRoleFilter}
-            uniqueRoles={uniqueRoles}
-          />
-
-          {/* Results Info */}
           <div className="px-6 py-3 bg-gray-50 border-b text-sm text-gray-600">
             Showing {filteredUsers.length} of {users.length} users
           </div>
@@ -218,7 +186,6 @@ export default function UsersPage() {
             loading={loading}
             onView={handleView}
             onEdit={handleEdit}
-            onDelete={handleDelete}
           />
         </CardContent>
       </Card>

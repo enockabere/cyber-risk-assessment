@@ -70,7 +70,7 @@ export function showUserViewModal(user: User) {
 
 export function showUserEditModal(
   user: User,
-  onSave: (updatedUser: Partial<User>) => void
+  onSave: (updatedUser: Partial<User> & { password?: string }) => void
 ) {
   Swal.fire({
     title: "Edit User",
@@ -78,23 +78,44 @@ export function showUserEditModal(
       <div class="text-left space-y-4">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Name:</label>
-          <input id="userName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" value="${
+          <input id="userName" class="w-full px-3 py-2 border rounded-md" value="${
             user.name || ""
-          }" placeholder="Enter name">
+          }" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email:</label>
+          <input id="userEmail" class="w-full px-3 py-2 border rounded-md" value="${
+            user.email
+          }" />
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Role:</label>
-          <select id="userRole" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <select id="userRole" class="w-full px-3 py-2 border rounded-md">
             <option value="admin" ${
               user.role === "admin" ? "selected" : ""
             }>Admin</option>
-            <option value="user" ${
-              user.role === "user" ? "selected" : ""
-            }>User</option>
-            <option value="moderator" ${
-              user.role === "moderator" ? "selected" : ""
-            }>Moderator</option>
+            <option value="respondent" ${
+              user.role === "respondent" ? "selected" : ""
+            }>Respondent</option>
           </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Status:</label>
+          <select id="userStatus" class="w-full px-3 py-2 border rounded-md">
+            <option value="active" ${
+              user.status === "active" ? "selected" : ""
+            }>Active</option>
+            <option value="inactive" ${
+              user.status === "inactive" ? "selected" : ""
+            }>Inactive</option>
+            <option value="pending" ${
+              user.status === "pending" ? "selected" : ""
+            }>Pending</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">New Password:</label>
+          <input id="userPassword" type="password" class="w-full px-3 py-2 border rounded-md" placeholder="Leave blank to keep current" />
         </div>
       </div>
     `,
@@ -103,32 +124,24 @@ export function showUserEditModal(
     confirmButtonColor: "#3b82f6",
     preConfirm: () => {
       const name = (document.getElementById("userName") as HTMLInputElement)
-        .value;
+        ?.value;
+      const email = (document.getElementById("userEmail") as HTMLInputElement)
+        ?.value;
       const role = (document.getElementById("userRole") as HTMLSelectElement)
-        .value;
-      return { name, role };
+        ?.value;
+      const status = (
+        document.getElementById("userStatus") as HTMLSelectElement
+      )?.value;
+      const password = (
+        document.getElementById("userPassword") as HTMLInputElement
+      )?.value;
+
+      return { name, email, role, status, ...(password && { password }) };
     },
   }).then((result) => {
     if (result.isConfirmed) {
-      onSave({ name: result.value.name, role: result.value.role });
+      onSave(result.value);
       Swal.fire("Success", "User updated successfully", "success");
-    }
-  });
-}
-
-export function showUserDeleteModal(user: User, onConfirm: () => void) {
-  Swal.fire({
-    title: "Delete User",
-    text: `Are you sure you want to delete ${user.name || user.email}?`,
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#ef4444",
-    cancelButtonColor: "#6b7280",
-    confirmButtonText: "Yes, delete!",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      onConfirm();
-      Swal.fire("Deleted!", "User has been deleted.", "success");
     }
   });
 }

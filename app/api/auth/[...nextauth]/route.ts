@@ -55,6 +55,13 @@ export const authOptions: NextAuthOptions = {
         const isValid = await compare(credentials.password, user.password);
         if (!isValid) return null;
 
+        await prisma.user.update({
+          where: { email: credentials.email },
+          data: {
+            lastLogin: new Date(),
+          },
+        });
+
         return {
           id: user.id,
           email: user.email,

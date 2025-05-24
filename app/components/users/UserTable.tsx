@@ -1,8 +1,8 @@
 import DataTable, { TableColumn } from "react-data-table-component";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Mail, Calendar, Users } from "lucide-react";
-import { RoleBadge, StatusBadge } from "../../dashboard/users/UserBadges";
-import { UserActionsDropdown } from "../../dashboard/users/UserActionsDropdown";
+import { RoleBadge, StatusBadge } from "./UserBadges";
+import { UserActionsDropdown } from "./UserActionsDropdown";
 import { AppUser } from "@/app/types/users";
 
 interface UserTableProps {
@@ -10,7 +10,6 @@ interface UserTableProps {
   loading: boolean;
   onView: (user: AppUser) => void;
   onEdit: (user: AppUser) => void;
-  onDelete: (user: AppUser) => void;
 }
 
 const customStyles = {
@@ -43,13 +42,7 @@ const customStyles = {
   },
 };
 
-export function UserTable({
-  data,
-  loading,
-  onView,
-  onEdit,
-  onDelete,
-}: UserTableProps) {
+export function UserTable({ data, loading, onView, onEdit }: UserTableProps) {
   const columns: TableColumn<AppUser>[] = [
     {
       name: "User",
@@ -57,7 +50,8 @@ export function UserTable({
         <div className="flex items-center gap-3 py-2">
           <Avatar className="h-10 w-10">
             <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-medium">
-              {(row.name || row.email).charAt(0).toUpperCase()}
+              {row.name?.trim().charAt(0).toUpperCase() ||
+                row.email.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <div className="min-w-0 flex-1">
@@ -112,7 +106,6 @@ export function UserTable({
         <UserActionsDropdown
           onView={() => onView(row)}
           onEdit={() => onEdit(row)}
-          onDelete={() => onDelete(row)}
         />
       ),
       ignoreRowClick: true,

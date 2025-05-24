@@ -1,29 +1,31 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, Settings, LogOut, Menu } from "lucide-react";
+import {
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  ListChecks,
+  Users,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { usePageLoader } from "@/app/context/PageLoaderContext";
 import { signOut } from "next-auth/react";
-
-const navLinks = [
-  {
-    href: "/dashboard",
-    label: "Dashboard",
-    icon: <LayoutDashboard className="w-4 h-4" />,
-  },
-  {
-    href: "/dashboard/users",
-    label: "User Management",
-    icon: <Settings className="w-4 h-4" />,
-  },
-];
+import { useState } from "react";
 
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { showLoader } = usePageLoader();
+
+  const isQuestionnaireRoute = pathname.startsWith(
+    "/dashboard/admin/questionnaire"
+  );
+  const [expandQuestionnaire, setExpandQuestionnaire] =
+    useState(isQuestionnaireRoute);
 
   const handleNavClick = (href: string) => {
     if (pathname !== href) {
@@ -35,21 +37,79 @@ export default function Sidebar() {
   const SidebarContent = () => (
     <div className="flex flex-col h-full bg-white border-r border-gray-200 w-64 p-4 space-y-2">
       <div className="text-xl font-bold text-indigo-600 px-2">CRAP</div>
+
       <nav className="flex-1 flex flex-col space-y-1 mt-6">
-        {navLinks.map(({ href, label, icon }) => (
-          <button
-            key={href}
-            onClick={() => handleNavClick(href)}
-            className={`flex items-center gap-3 px-3 py-2 rounded-md transition text-sm text-left w-full ${
-              pathname === href
-                ? "bg-indigo-100 text-indigo-700 font-semibold"
-                : "text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
-            }`}
-          >
-            {icon}
-            {label}
-          </button>
-        ))}
+        {/* Dashboard */}
+        <button
+          onClick={() => handleNavClick("/dashboard")}
+          className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm w-full text-left transition ${
+            pathname === "/dashboard"
+              ? "bg-indigo-100 text-indigo-700 font-semibold"
+              : "text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+          }`}
+        >
+          <LayoutDashboard className="w-4 h-4" />
+          Dashboard
+        </button>
+
+        {/* User Management */}
+        <button
+          onClick={() => handleNavClick("/dashboard/admin/users")}
+          className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm w-full text-left transition ${
+            pathname.startsWith("/dashboard/admin/users")
+              ? "bg-indigo-100 text-indigo-700 font-semibold"
+              : "text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+          }`}
+        >
+          <Users className="w-4 h-4" />
+          User Management
+        </button>
+
+        {/* Questionnaire Builder Parent */}
+        <button
+          onClick={() => setExpandQuestionnaire(!expandQuestionnaire)}
+          className="flex items-center justify-between px-3 py-2 rounded-md text-sm w-full text-left text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+        >
+          <span className="flex items-center gap-3">
+            <ListChecks className="w-4 h-4" />
+            Questionnaire Builder
+          </span>
+          {expandQuestionnaire ? (
+            <ChevronUp className="w-4 h-4" />
+          ) : (
+            <ChevronDown className="w-4 h-4" />
+          )}
+        </button>
+
+        {/* Nested Links */}
+        {expandQuestionnaire && (
+          <div className="pl-8 flex flex-col space-y-1">
+            <button
+              onClick={() =>
+                handleNavClick("/dashboard/admin/questionnaire/sections")
+              }
+              className={`text-sm px-3 py-2 rounded-md text-left transition ${
+                pathname.startsWith("/dashboard/admin/questionnaire/sections")
+                  ? "bg-indigo-100 text-indigo-700 font-semibold"
+                  : "text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+              }`}
+            >
+              Sections
+            </button>
+            <button
+              onClick={() =>
+                handleNavClick("/dashboard/admin/questionnaire/questions")
+              }
+              className={`text-sm px-3 py-2 rounded-md text-left transition ${
+                pathname.startsWith("/dashboard/admin/questionnaire/questions")
+                  ? "bg-indigo-100 text-indigo-700 font-semibold"
+                  : "text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+              }`}
+            >
+              Questions
+            </button>
+          </div>
+        )}
       </nav>
 
       <Button
