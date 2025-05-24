@@ -31,14 +31,17 @@ model QuestionnaireSection {
 }
 
 model Question {
-  id        String               @id @default(uuid())
-  text      String
-  type      QuestionType
-  weight    Float?
-  sectionId String
-  section   QuestionnaireSection @relation("SectionQuestions", fields: [sectionId], references: [id])
-  createdAt DateTime             @default(now())
+  id              String               @id @default(uuid())
+  text            String
+  type            QuestionType
+  weight          Float?
+  sectionId       String
+  section         QuestionnaireSection @relation("SectionQuestions", fields: [sectionId], references: [id])
+  scoringModelId  String?              
+  scoringModel    ScoringModel?        @relation(fields: [scoringModelId], references: [id]) // new
+  createdAt       DateTime             @default(now())
 }
+
 
 enum QuestionType {
   MULTIPLE_CHOICE
@@ -60,12 +63,15 @@ model Submission {
 }
 
 model ScoringModel {
-  id          String   @id @default(uuid())
+  id          String     @id @default(uuid())
   name        String
   description String?
   thresholds  Json
-  createdAt   DateTime @default(now())
+  createdAt   DateTime   @default(now())
+
+  questions   Question[]
 }
+
 
 model ScoringDetail {
   id           String     @id @default(uuid())

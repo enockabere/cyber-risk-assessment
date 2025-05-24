@@ -21,17 +21,21 @@ export default function Sidebar() {
   const router = useRouter();
   const { showLoader } = usePageLoader();
 
-  const isQuestionnaireRoute = pathname.startsWith(
-    "/dashboard/admin/questionnaire"
+  const [expandedMenu, setExpandedMenu] = useState<string | null>(
+    pathname.startsWith("/dashboard/admin/questionnaire")
+      ? "questionnaire"
+      : null
   );
-  const [expandQuestionnaire, setExpandQuestionnaire] =
-    useState(isQuestionnaireRoute);
 
   const handleNavClick = (href: string) => {
     if (pathname !== href) {
       showLoader();
       router.push(href);
     }
+  };
+
+  const toggleMenu = (menu: string) => {
+    setExpandedMenu((prev) => (prev === menu ? null : menu));
   };
 
   const SidebarContent = () => (
@@ -67,22 +71,22 @@ export default function Sidebar() {
 
         {/* Questionnaire Builder Parent */}
         <button
-          onClick={() => setExpandQuestionnaire(!expandQuestionnaire)}
+          onClick={() => toggleMenu("questionnaire")}
           className="flex items-center justify-between px-3 py-2 rounded-md text-sm w-full text-left text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
         >
           <span className="flex items-center gap-3">
             <ListChecks className="w-4 h-4" />
             Questionnaire Builder
           </span>
-          {expandQuestionnaire ? (
+          {expandedMenu === "questionnaire" ? (
             <ChevronUp className="w-4 h-4" />
           ) : (
             <ChevronDown className="w-4 h-4" />
           )}
         </button>
 
-        {/* Nested Links */}
-        {expandQuestionnaire && (
+        {/* Nested Questionnaire Links */}
+        {expandedMenu === "questionnaire" && (
           <div className="pl-8 flex flex-col space-y-1">
             <button
               onClick={() =>
@@ -108,10 +112,21 @@ export default function Sidebar() {
             >
               Questions
             </button>
+            <button
+              onClick={() => handleNavClick("/dashboard/admin/scoring")}
+              className={`text-sm px-3 py-2 rounded-md text-left transition ${
+                pathname.startsWith("/dashboard/admin/scoring")
+                  ? "bg-indigo-100 text-indigo-700 font-semibold"
+                  : "text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+              }`}
+            >
+              Scoring Models
+            </button>
           </div>
         )}
       </nav>
 
+      {/* Logout */}
       <Button
         variant="ghost"
         className="text-red-500 hover:bg-red-100 justify-start"

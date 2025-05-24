@@ -3,13 +3,12 @@ import { prisma } from "@/app/lib/prisma";
 
 export async function GET() {
   const questions = await prisma.question.findMany({
-    orderBy: { createdAt: "desc" },
     include: {
-      section: {
-        select: {
-          title: true,
-        },
-      },
+      section: true,
+      scoringModel: true,
+    },
+    orderBy: {
+      createdAt: "desc",
     },
   });
 
