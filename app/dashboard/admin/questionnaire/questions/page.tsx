@@ -23,21 +23,27 @@ interface Question {
   type: string;
   weight: number | null;
   sectionId: string;
+  position: number;
   section?: {
     title: string;
   };
 }
 
+interface EnrichedQuestion extends Question {
+  sectionPosition: string;
+  position: number;
+}
+
 interface Section {
   id: string;
   title: string;
+  position: string;
 }
 
 export default function QuestionManagementPage() {
   const { setTitle } = useTopbar();
   const { setBreadcrumbs } = useBreadcrumbs();
-
-  const [questions, setQuestions] = useState<Question[]>([]);
+  const [questions, setQuestions] = useState<EnrichedQuestion[]>([]);
   const [sections, setSections] = useState<Section[]>([]);
   const [selected, setSelected] = useState<Question | null>(null);
   const [text, setText] = useState("");
@@ -47,6 +53,7 @@ export default function QuestionManagementPage() {
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [weightInput, setWeightInput] = useState<number | "">("");
+  const [position, setPosition] = useState<number | "">("");
 
   useEffect(() => {
     setTitle("Questionnaire Questions");
@@ -62,11 +69,38 @@ export default function QuestionManagementPage() {
 
   async function fetchData() {
     const [questionsRes, sectionsRes] = await Promise.all([
-      fetch("/api/admin/questionnaire/questions"),
+      fetch("/api/admin/questionnaire/questions?include=section"),
       fetch("/api/admin/questionnaire/sections"),
     ]);
-    setQuestions(await questionsRes.json());
-    setSections(await sectionsRes.json());
+
+    const questionsData = await questionsRes.json();
+    const sectionsData = await sectionsRes.json();
+
+    // Map sectionId to position
+    const sectionPositionMap = new Map<string, string>();
+    sectionsData.forEach((s: Section) => {
+      sectionPositionMap.set(s.id, s.position || "0");
+    });
+
+    const enriched: EnrichedQuestion[] = questionsData.map((q: Question) => ({
+      ...q,
+      sectionPosition: sectionPositionMap.get(q.sectionId) || "0",
+      position: (q as any).position ?? 0, // or ensure it's coming from the API correctly
+    }));
+
+    const sorted = enriched.sort((a, b) => {
+      const secCmp = a.sectionPosition.localeCompare(
+        b.sectionPosition,
+        undefined,
+        {
+          numeric: true,
+        }
+      );
+      return secCmp !== 0 ? secCmp : a.position - b.position;
+    });
+
+    setSections(sectionsData);
+    setQuestions(sorted);
   }
 
   function resetForm() {
@@ -86,6 +120,7 @@ export default function QuestionManagementPage() {
     setWeight(q.weight ?? null);
     setWeightInput(q.weight ?? "");
     setSectionId(q.sectionId);
+    setPosition((q as any).position ?? "");
     setOpen(true);
   }
 
@@ -101,7 +136,13 @@ export default function QuestionManagementPage() {
     const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, type, weight: actualWeight, sectionId }),
+      body: JSON.stringify({
+        text,
+        type,
+        weight: actualWeight,
+        sectionId,
+        position,
+      }),
     });
 
     setSaving(false);
@@ -164,7 +205,7 @@ export default function QuestionManagementPage() {
     }
   }
 
-  const columns: TableColumn<Question>[] = [
+  const columns: TableColumn<EnrichedQuestion>[] = [
     { name: "Text", selector: (row) => row.text, sortable: true, wrap: true },
     { name: "Type", selector: (row) => row.type },
     { name: "Weight", selector: (row) => formatWeight(row.weight) },
@@ -172,6 +213,13 @@ export default function QuestionManagementPage() {
       name: "Section",
       selector: (row) => row.section?.title ?? "Unassigned",
       wrap: true,
+    },
+    {
+      name: "Position",
+      selector: (row) => row.position,
+      sortable: true,
+      style: { textAlign: "center" },
+      width: "120px",
     },
     {
       name: "Actions",
@@ -265,6 +313,15 @@ export default function QuestionManagementPage() {
                     </option>
                   ))}
                 </select>
+              </div>
+              <div>
+                <label className="text-sm font-medium">Question Position</label>
+                <input
+                  type="number"
+                  className="w-full p-2 border rounded"
+                  value={position}
+                  onChange={(e) => setPosition(parseInt(e.target.value))}
+                />
               </div>
 
               <div className="flex justify-end">

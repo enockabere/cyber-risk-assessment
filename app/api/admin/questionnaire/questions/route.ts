@@ -16,14 +16,17 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const { text, type, weight, sectionId } = await req.json();
+  const { text, type, weight, sectionId, position } = await req.json();
 
   if (!text || typeof text !== "string") {
     return NextResponse.json({ error: "Text is required" }, { status: 400 });
   }
 
-  if (!type || typeof type !== "string") {
-    return NextResponse.json({ error: "Type is required" }, { status: 400 });
+  if (!["TEXT", "MULTIPLE_CHOICE", "RATING", "CHECKBOX"].includes(type)) {
+    return NextResponse.json(
+      { error: "Invalid question type" },
+      { status: 400 }
+    );
   }
 
   if (!sectionId || typeof sectionId !== "string") {
@@ -36,6 +39,7 @@ export async function POST(req: NextRequest) {
       type,
       weight: weight ?? null,
       sectionId,
+      position: position ?? 0,
     },
   });
 

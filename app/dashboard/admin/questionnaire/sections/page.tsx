@@ -23,6 +23,7 @@ interface Section {
   title: string;
   description: string | null;
   parentId?: string | null;
+  position: string;
 }
 
 export default function SectionManagementPage() {
@@ -36,6 +37,7 @@ export default function SectionManagementPage() {
   const [parentIdInput, setParentIdInput] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [positionInput, setPositionInput] = useState<string>("");
 
   useEffect(() => {
     setTitle("Questionnaire Sections");
@@ -52,7 +54,16 @@ export default function SectionManagementPage() {
   async function fetchSections() {
     const res = await fetch("/api/admin/questionnaire/sections");
     const data = await res.json();
-    setSections(data);
+
+    const sorted = [...data].sort((a, b) =>
+      String(a.position || "").localeCompare(
+        String(b.position || ""),
+        undefined,
+        { numeric: true }
+      )
+    );
+
+    setSections(sorted);
   }
 
   function handleEdit(section: Section) {
@@ -82,6 +93,7 @@ export default function SectionManagementPage() {
       title: titleInput,
       description: descInput,
       parentId: parentIdInput || null,
+      position: positionInput.toString(),
     };
 
     try {
@@ -212,6 +224,18 @@ export default function SectionManagementPage() {
                       </option>
                     ))}
                 </select>
+              </div>
+
+              <div>
+                <label className="block mb-1 text-sm font-medium text-gray-700">
+                  Section Position <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  type="text"
+                  value={positionInput}
+                  onChange={(e) => setPositionInput(e.target.value)}
+                  placeholder="e.g. 1, 1.1, 2.3"
+                />
               </div>
 
               <div className="flex justify-end">

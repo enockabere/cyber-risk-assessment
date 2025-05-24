@@ -23,22 +23,25 @@ model QuestionnaireSection {
   title       String
   description String?
   parentId    String?
+  position    String                 
   parent      QuestionnaireSection?  @relation("SectionHierarchy", fields: [parentId], references: [id])
   children    QuestionnaireSection[] @relation("SectionHierarchy")
   questions   Question[]             @relation("SectionQuestions")
   createdAt   DateTime               @default(now())
-  updatedAt DateTime @updatedAt @default(now())
+  updatedAt   DateTime               @updatedAt @default(now())
 }
+
 
 model Question {
   id              String               @id @default(uuid())
   text            String
   type            QuestionType
   weight          Float?
+  position        Int                  @default(0) 
   sectionId       String
   section         QuestionnaireSection @relation("SectionQuestions", fields: [sectionId], references: [id])
-  scoringModelId  String?              
-  scoringModel    ScoringModel?        @relation(fields: [scoringModelId], references: [id]) // new
+  scoringModelId  String?
+  scoringModel    ScoringModel?        @relation(fields: [scoringModelId], references: [id])
   createdAt       DateTime             @default(now())
 }
 

@@ -5,7 +5,7 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const { title, description, parentId } = await req.json();
+  const { title, description, parentId, position } = await req.json();
 
   const updated = await prisma.questionnaireSection.update({
     where: { id: params.id },
@@ -13,6 +13,7 @@ export async function PATCH(
       title,
       description,
       parentId: parentId || null,
+      position: position ?? "0",
     },
   });
 

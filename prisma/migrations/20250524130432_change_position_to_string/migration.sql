@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "QuestionnaireSection" ALTER COLUMN "updatedAt" SET DEFAULT CURRENT_TIMESTAMP,
+ALTER COLUMN "position" DROP DEFAULT;

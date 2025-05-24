@@ -8,6 +8,7 @@ interface Section {
   title: string;
   description: string | null;
   parentId?: string | null;
+  position: string;
 }
 
 interface Props {
@@ -17,14 +18,55 @@ interface Props {
 }
 
 export default function SectionTable({ data, onEdit, onDelete }: Props) {
-  // Build a lookup map of section ID to title
-  const parentMap = new Map(data.map((section) => [section.id, section.title]));
+  // Build a map of section ID to section
+  const sectionMap = new Map<string, Section>();
+  data.forEach((section) => sectionMap.set(section.id, section));
 
-  const columns: TableColumn<Section>[] = [
+  // Group sections by parentId
+  const groupedByParent = new Map<string | null, Section[]>();
+  data.forEach((section) => {
+    const key = section.parentId || null;
+    if (!groupedByParent.has(key)) groupedByParent.set(key, []);
+    groupedByParent.get(key)?.push(section);
+  });
+
+  groupedByParent.forEach((list) =>
+    list.sort((a, b) =>
+      String(a.position || "").localeCompare(
+        String(b.position || ""),
+        undefined,
+        { numeric: true }
+      )
+    )
+  );
+
+  // Generate a flat list with prefixed titles
+  const numberedSections: (Section & { displayTitle: string })[] = [];
+  function buildHierarchy(parentId: string | null, prefix: string = "") {
+    const siblings = groupedByParent.get(parentId);
+    if (!siblings) return;
+
+    siblings.forEach((section, index) => {
+      const currentPrefix = prefix ? `${prefix}.${index + 1}` : `${index + 1}`;
+      numberedSections.push({
+        ...section,
+        displayTitle: `${currentPrefix}. ${section.title}`,
+      });
+
+      buildHierarchy(section.id, currentPrefix);
+    });
+  }
+
+  buildHierarchy(null); // Start from root sections
+
+  const parentMap = new Map(data.map((s) => [s.id, s.title]));
+
+  const columns: TableColumn<Section & { displayTitle: string }>[] = [
     {
-      name: "Title",
-      selector: (row) => row.title,
-      sortable: true,
+      name: "Section",
+      selector: (row) => row.displayTitle,
+      sortable: false,
+      wrap: true,
     },
     {
       name: "Description",
@@ -32,10 +74,16 @@ export default function SectionTable({ data, onEdit, onDelete }: Props) {
       wrap: true,
     },
     {
-      name: "Parent Section",
+      name: "Parent",
       selector: (row) =>
         row.parentId ? parentMap.get(row.parentId) || "Unknown" : "None",
+    },
+    {
+      name: "Position",
+      selector: (row) => row.position,
       sortable: true,
+      style: { textAlign: "center" },
+      width: "120px",
     },
     {
       name: "Actions",
@@ -64,7 +112,7 @@ export default function SectionTable({ data, onEdit, onDelete }: Props) {
   return (
     <DataTable
       columns={columns}
-      data={data}
+      data={numberedSections}
       pagination
       highlightOnHover
       noDataComponent={
