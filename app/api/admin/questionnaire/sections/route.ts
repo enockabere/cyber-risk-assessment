@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     data: {
       title,
       description,
-      parentId: parentId || null, // optional: allow top-level sections
+      parentId: parentId || null, 
     },
   });
 
