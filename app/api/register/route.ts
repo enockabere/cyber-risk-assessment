@@ -1,6 +1,7 @@
 import { hash } from "bcryptjs";
 import prisma from "@/app/lib/prisma";
 import { NextResponse } from "next/server";
+import { UserRole } from "@prisma/client";
 
 export async function POST(req: Request) {
   try {
@@ -23,15 +24,17 @@ export async function POST(req: Request) {
     }
 
     const hashed = await hash(password, 10);
-    const allowedRoles = ["respondent", "admin"];
-    const cleanRole = allowedRoles.includes(role) ? role : "respondent";
+    const allowedRoles = ["RESPONDENT", "ADMIN"];
+    const cleanRole = allowedRoles.includes(role.toUpperCase())
+      ? role.toUpperCase()
+      : "RESPONDENT";
 
     const user = await prisma.user.create({
       data: {
         email,
         name,
         password: hashed,
-        role: cleanRole,
+        role: cleanRole as UserRole,
         status: "active",
       },
       select: {

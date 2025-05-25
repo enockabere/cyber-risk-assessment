@@ -68,15 +68,13 @@ export default function Sidebar() {
           <Users className="w-4 h-4" />
           User Management
         </button>
-
-        {/* Questionnaire Builder Parent */}
         <button
           onClick={() => toggleMenu("questionnaire")}
           className="flex items-center justify-between px-3 py-2 rounded-md text-sm w-full text-left text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
         >
           <span className="flex items-center gap-3">
             <ListChecks className="w-4 h-4" />
-            Questionnaire Builder
+            Risk Descriptions
           </span>
           {expandedMenu === "questionnaire" ? (
             <ChevronUp className="w-4 h-4" />
@@ -84,43 +82,19 @@ export default function Sidebar() {
             <ChevronDown className="w-4 h-4" />
           )}
         </button>
-
-        {/* Nested Questionnaire Links */}
         {expandedMenu === "questionnaire" && (
           <div className="pl-8 flex flex-col space-y-1">
             <button
               onClick={() =>
-                handleNavClick("/dashboard/admin/questionnaire/sections")
+                handleNavClick("/dashboard/admin/questionnaire/create")
               }
               className={`text-sm px-3 py-2 rounded-md text-left transition ${
-                pathname.startsWith("/dashboard/admin/questionnaire/sections")
+                pathname.startsWith("/dashboard/admin/questionnaire/create")
                   ? "bg-indigo-100 text-indigo-700 font-semibold"
                   : "text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
               }`}
             >
-              Sections
-            </button>
-            <button
-              onClick={() =>
-                handleNavClick("/dashboard/admin/questionnaire/questions")
-              }
-              className={`text-sm px-3 py-2 rounded-md text-left transition ${
-                pathname.startsWith("/dashboard/admin/questionnaire/questions")
-                  ? "bg-indigo-100 text-indigo-700 font-semibold"
-                  : "text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
-              }`}
-            >
-              Questions
-            </button>
-            <button
-              onClick={() => handleNavClick("/dashboard/admin/scoring")}
-              className={`text-sm px-3 py-2 rounded-md text-left transition ${
-                pathname.startsWith("/dashboard/admin/scoring")
-                  ? "bg-indigo-100 text-indigo-700 font-semibold"
-                  : "text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
-              }`}
-            >
-              Scoring Models
+              Create
             </button>
           </div>
         )}

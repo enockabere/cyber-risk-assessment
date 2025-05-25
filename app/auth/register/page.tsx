@@ -319,8 +319,6 @@ export default function RegisterPage() {
     </div>
   );
 }
-
-// Feature data matching login page
 const features = [
   {
     icon: <ShieldCheck className="text-indigo-200 w-4 h-4" />,
