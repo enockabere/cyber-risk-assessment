@@ -8,7 +8,11 @@ export async function PATCH(
 ) {
   const { name, email, role, status, password } = await req.json();
 
-  const dataToUpdate: any = { name, email, role, status };
+  const dataToUpdate: any = { name, email, status };
+
+  if (role) {
+    dataToUpdate.role = role.toUpperCase();
+  }
 
   if (password) {
     dataToUpdate.password = await hash(password, 10);

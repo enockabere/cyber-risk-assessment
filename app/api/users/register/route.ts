@@ -14,12 +14,17 @@ export async function POST(req: Request) {
   }
 
   const hashed = await hash(password, 10);
+
+  const normalizedRole = ["admin", "respondent"].includes(role.toLowerCase())
+    ? role.toUpperCase()
+    : "RESPONDENT";
+
   const user = await prisma.user.create({
     data: {
       email,
       name,
       password: hashed,
-      role: ["admin", "respondent"].includes(role) ? role : "respondent",
+      role: normalizedRole,
       status: "active",
     },
     select: {
