@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
+import { usePageLoader } from "@/app/context/PageLoaderContext";
 
 interface BackgroundFieldInput {
   label: string;
@@ -50,6 +51,7 @@ export default function BackgroundInfoSetup() {
     defaultBackgroundFields
   );
   const [saving, setSaving] = useState(false);
+  const { showLoader } = usePageLoader();
 
   const handleFieldChange = (
     index: number,
@@ -87,6 +89,7 @@ export default function BackgroundInfoSetup() {
 
     if (res.ok) {
       Swal.fire("Success", "Background info saved", "success").then(() => {
+        showLoader();
         router.push(`/dashboard/admin/questions`);
       });
     } else {

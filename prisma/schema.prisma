@@ -81,32 +81,25 @@ model Question {
   backgroundField   BackgroundField? @relation(fields: [backgroundFieldId], references: [id])
 
   options  RiskOption[]
-  controls RiskControl[]
   Answer   Answer[]
 }
+
 
 model RiskOption {
   id          String     @id @default(uuid())
   text        String
-  probability RiskLevel
-  impact      RiskLevel
-  rating      RiskRating
+  probability RiskLevel?
+  impact      RiskLevel?
+  rating      RiskRating?
+
+  controlDescription         String?
+  residualProbability        RiskLevel?
+  residualImpact             RiskLevel?
+  residualRating             RiskRating?
 
   questionId String
   question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
   Answer     Answer[]
-}
-
-model RiskControl {
-  id                  String     @id @default(uuid())
-  description         String
-  owner               String
-  residualProbability RiskLevel
-  residualImpact      RiskLevel
-  residualRating      RiskRating
-
-  questionId String
-  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 }
 
 model Submission {
