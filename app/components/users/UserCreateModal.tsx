@@ -112,7 +112,7 @@ export default function UserCreateModal({ open, onClose, onCreate }: Props) {
           </div>
 
           <div className="space-y-1">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">University</Label>
             <Input
               id="name"
               value={name}
