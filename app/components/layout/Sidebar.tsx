@@ -1,7 +1,15 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, LogOut, Menu, Users } from "lucide-react";
+import {
+  Menu,
+  LayoutDashboard,
+  ShieldCheck,
+  FileBarChart2,
+  ScrollText,
+  UsersRound,
+  LogOut,
+} from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { usePageLoader } from "@/app/context/PageLoaderContext";
@@ -24,6 +32,8 @@ export default function Sidebar() {
     session?.user?.role === "ADMIN" ||
     session?.user?.email === "abereenock95@gmail.com";
 
+  const isRespondent = session?.user?.role === "RESPONDENT";
+
   const SidebarContent = () => (
     <div className="flex flex-col h-full bg-white border-r border-gray-200 w-64 p-4 space-y-2">
       <div className="text-xl font-bold text-indigo-600 px-2">CRAP</div>
@@ -42,7 +52,37 @@ export default function Sidebar() {
           Dashboard
         </button>
 
-        {/* Only show if ADMIN or specific email */}
+        {/* Risk Assessment */}
+        {isRespondent && (
+          <button
+            onClick={() => handleNavClick("/dashboard/assessment")}
+            className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm w-full text-left transition ${
+              pathname.startsWith("/dashboard/assessment")
+                ? "bg-indigo-100 text-indigo-700 font-semibold"
+                : "text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+            }`}
+          >
+            <ScrollText className="w-4 h-4" />
+            Risk Assessment
+          </button>
+        )}
+
+        {/* Assessment Results */}
+        {isRespondent && (
+          <button
+            onClick={() => handleNavClick("/dashboard/responses")}
+            className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm w-full text-left transition ${
+              pathname.startsWith("/dashboard/responses")
+                ? "bg-indigo-100 text-indigo-700 font-semibold"
+                : "text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+            }`}
+          >
+            <FileBarChart2 className="w-4 h-4" />
+            Assessment Results
+          </button>
+        )}
+
+        {/* Admin-only links */}
         {isAdmin && (
           <>
             <button
@@ -53,7 +93,7 @@ export default function Sidebar() {
                   : "text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
               }`}
             >
-              <Users className="w-4 h-4" />
+              <ShieldCheck className="w-4 h-4" />
               Risk Descriptions
             </button>
 
@@ -65,7 +105,7 @@ export default function Sidebar() {
                   : "text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
               }`}
             >
-              <Users className="w-4 h-4" />
+              <UsersRound className="w-4 h-4" />
               User Management
             </button>
           </>

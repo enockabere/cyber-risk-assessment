@@ -1,15 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import { ClipboardList, BarChart2, AlertTriangle } from "lucide-react";
 import { useTopbar } from "@/app/context/TopbarContext";
 import { useSession } from "next-auth/react";
+import { toast } from "react-toastify";
+import { ClipboardList, BarChart2, AlertTriangle } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import RespondentStats from "../components/users/RespondentStats";
 
 export default function DashboardPage() {
   const { setTitle } = useTopbar();
   const { data: session } = useSession();
+
   const [stats, setStats] = useState({
     totalSubmissions: 0,
     averageRiskScore: 0,
@@ -18,32 +20,24 @@ export default function DashboardPage() {
 
   useEffect(() => {
     setTitle("Dashboard");
-  }, [setTitle]);
 
-  useEffect(() => {
     const success = localStorage.getItem("login_success");
     if (success) {
       toast.success("Login successful");
       localStorage.removeItem("login_success");
     }
-  }, []);
 
-  useEffect(() => {
-    if (session?.user.role === "admin") {
+    if (session?.user.role === "ADMIN") {
       fetch("/api/dashboard/summary")
         .then((res) => res.json())
         .then((data) => setStats(data))
         .catch((err) => console.error("Failed to load stats:", err));
     }
-  }, [session]);
+  }, [setTitle, session]);
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-semibold mb-4">
-        Welcome to the Dashboard 🎉
-      </h1>
-
-      {session?.user.role === "admin" && (
+      {session?.user.role === "ADMIN" ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <StatCard
             title="Total Submissions"
@@ -61,6 +55,8 @@ export default function DashboardPage() {
             icon={<AlertTriangle className="text-red-600" />}
           />
         </div>
+      ) : (
+        <RespondentStats />
       )}
     </div>
   );
