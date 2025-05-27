@@ -122,14 +122,16 @@ function calculateRiskRating(prob?: string, impact?: string): RiskLevel {
   if (!prob || !impact) return null;
   return riskMatrix[prob.toUpperCase()]?.[impact.toUpperCase()] ?? null;
 }
+function getAverageRiskRating(questions: Question[] | undefined): RiskLevel {
+  if (!questions || questions.length === 0) return null;
 
-function getAverageRiskRating(questions: Question[]): RiskLevel {
   const ratingOrder: Exclude<RiskLevel, null>[] = [
     "Sustainable",
     "Moderate",
     "Severe",
     "Critical",
   ];
+
   const ratingScores: Record<Exclude<RiskLevel, null>, number> = {
     Sustainable: 0,
     Moderate: 1,
@@ -418,33 +420,31 @@ export default function RespondentStats() {
 
   useEffect(() => {
     async function fetchData() {
-      await new Promise((res) => setTimeout(res, 1000));
-      const mockStats: StatsData = {
-        totalQuestions: 25,
-        answeredQuestions: 18,
-        lastSubmissionDate: new Date().toISOString(),
-        averageRating: null,
-        backgroundCompleted: true,
-        allQuestionsAnswered: false,
-      };
+      try {
+        setLoading(true);
 
-      const mockQuestions: Question[] = Array(18)
-        .fill(null)
-        .map((_, i) => ({
-          position: i + 1,
-          text: `Question ${i + 1}`,
-          selectedOption: {
-            probability: ["LOW", "MEDIUM", "HIGH"][
-              Math.floor(Math.random() * 3)
-            ],
-            impact: ["LOW", "MEDIUM", "HIGH"][Math.floor(Math.random() * 3)],
-          },
-        }));
+        const res = await fetch("/api/assessment/stats");
+        const data = await res.json();
 
-      const rating = getAverageRiskRating(mockQuestions);
-      setStats({ ...mockStats, averageRating: rating });
-      setAverageRating(rating);
-      setLoading(false);
+        const questions: Question[] = data.answeredQuestionsDetails ?? [];
+
+        const rating = getAverageRiskRating(questions);
+
+        setStats({
+          totalQuestions: data.totalQuestions,
+          answeredQuestions: data.answeredQuestions,
+          lastSubmissionDate: data.lastSubmissionDate,
+          backgroundCompleted: data.backgroundCompleted,
+          allQuestionsAnswered: data.allQuestionsAnswered,
+          averageRating: rating,
+        });
+
+        setAverageRating(rating);
+      } catch (err) {
+        console.error("Failed to fetch stats", err);
+      } finally {
+        setLoading(false);
+      }
     }
 
     fetchData();
@@ -453,14 +453,6 @@ export default function RespondentStats() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 py-4">
       <div className="max-w-6xl mx-auto px-6">
-        {/* <div className="text-center mb-12">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Your Security Dashboard
-          </h1>
-          <p className="text-lg text-gray-600">
-            Monitor your cybersecurity posture in real-time
-          </p>
-        </div> */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
           <ProgressCard stats={stats} loading={loading} />
           <RiskRatingCard

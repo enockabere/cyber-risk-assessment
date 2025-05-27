@@ -12,15 +12,12 @@ import {
   Cell,
   PieChart,
   Pie,
-  BarChart,
-  Bar,
 } from "recharts";
 import {
   AlertTriangle,
   Shield,
   TrendingUp,
   FileText,
-  Users,
   Activity,
 } from "lucide-react";
 
@@ -440,7 +437,9 @@ const QuestionCard = memo(
             </div>
             <p className="text-xs text-gray-600 ml-9">
               <span className="font-medium text-gray-700">Selected:</span>{" "}
-              {question.selectedOption.text}
+              {question.selectedOption?.text ?? (
+                <span className="italic text-gray-400">N/A</span>
+              )}
             </p>
           </div>
           <div
@@ -483,39 +482,8 @@ export default function ResponsesPage() {
   const [backgroundResponses, setBackgroundResponses] = useState<
     BackgroundResponse[]
   >([]);
-  const [questions, setQuestions] = useState<Question[]>([
-    // Mock data for demonstration
-    {
-      position: 1,
-      text: "What is the likelihood of a cybersecurity breach affecting critical systems?",
-      selectedOption: {
-        text: "Moderate likelihood with potential system downtime",
-        probability: "MEDIUM",
-        impact: "HIGH",
-        controlDescription:
-          "Multi-factor authentication and regular security audits",
-      },
-    },
-    {
-      position: 2,
-      text: "How would supply chain disruption impact operations?",
-      selectedOption: {
-        text: "Severe impact on production capacity",
-        probability: "LOW",
-        impact: "VERY_HIGH",
-        controlDescription: "Diversified supplier network",
-      },
-    },
-    {
-      position: 3,
-      text: "What is the risk of regulatory non-compliance?",
-      selectedOption: {
-        text: "Low probability but high penalties",
-        probability: "LOW",
-        impact: "HIGH",
-      },
-    },
-  ]);
+  const [questions, setQuestions] = useState<Question[]>([]);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -537,6 +505,32 @@ export default function ResponsesPage() {
   const controlsCount = questions.filter(
     (q) => q.selectedOption.controlDescription
   ).length;
+
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const res = await fetch("/api/assessment/responses");
+        const data = await res.json();
+
+        if (data.error) {
+          setError(data.error);
+        } else {
+          setBackgroundResponses(data.backgroundResponses || []);
+          setQuestions(data.questions || []);
+        }
+      } catch (err) {
+        setError("Failed to load assessment responses.");
+        console.error("Error fetching responses:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, []);
 
   if (loading) {
     return (

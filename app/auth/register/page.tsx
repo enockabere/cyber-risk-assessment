@@ -33,7 +33,7 @@ export default function RegisterPage() {
 
   const validateForm = () => {
     if (!name) {
-      setError("Please enter your full name");
+      setError("Please enter your university name");
       return false;
     }
     if (!email) {
@@ -173,7 +173,7 @@ export default function RegisterPage() {
                   htmlFor="name"
                   className="text-xs font-medium text-gray-700 group-focus-within:text-indigo-600 transition-colors duration-200"
                 >
-                  Full Name
+                  University
                 </Label>
                 <div className="relative">
                   <User className="absolute left-2 top-2 h-4 w-4 text-gray-400 group-focus-within:text-indigo-500 transition-colors duration-200" />
