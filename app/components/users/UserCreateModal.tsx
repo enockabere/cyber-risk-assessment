@@ -127,7 +127,7 @@ export default function UserCreateModal({ open, onClose, onCreate }: Props) {
             <Select value={role} onValueChange={setRole}>
               <SelectTrigger
                 id="role"
-                className="w-full bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm px-3 py-2"
+                className="w-full bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm px-3 py-2"
               >
                 <SelectValue placeholder="Select role" />
               </SelectTrigger>
@@ -141,7 +141,7 @@ export default function UserCreateModal({ open, onClose, onCreate }: Props) {
           <Button
             onClick={handleSubmit}
             disabled={loading}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
+            className="w-full bg-green-600 hover:bg-green-700 text-white"
           >
             {loading ? "Creating..." : "Create User"}
           </Button>

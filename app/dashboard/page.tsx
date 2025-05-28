@@ -42,7 +42,7 @@ export default function DashboardPage() {
           <StatCard
             title="Total Submissions"
             value={stats.totalSubmissions}
-            icon={<ClipboardList className="text-indigo-600" />}
+            icon={<ClipboardList className="text-green-600" />}
           />
           <StatCard
             title="Average Risk Score"

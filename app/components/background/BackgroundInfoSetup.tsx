@@ -142,7 +142,7 @@ export default function BackgroundInfoSetup() {
         <Button
           disabled={saving}
           onClick={saveFields}
-          className="bg-indigo-600 text-white"
+          className="bg-green-600 text-white"
         >
           {saving ? "Saving..." : "Save & Continue"}
         </Button>

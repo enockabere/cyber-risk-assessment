@@ -225,7 +225,7 @@ export default function CreateQuestionModal({ onSuccess, existing }: Props) {
       </div>
 
       <Button
-        className="mt-6 w-full bg-indigo-600 text-white"
+        className="mt-6 w-full bg-green-600 text-white"
         onClick={handleSubmit}
         disabled={saving}
       >

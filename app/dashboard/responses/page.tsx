@@ -379,20 +379,29 @@ const MetricCard = memo(
           <div className="flex items-center justify-between">
             <div className="text-white">
               <p className="text-sm opacity-90">{title}</p>
+
               {badge && riskRating ? (
-                <div
-                  className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold mt-2 ${riskStyles[riskRating].bg}`}
-                >
-                  <span>{riskStyles[riskRating].icon}</span>
-                  {value}
-                </div>
+                (() => {
+                  const style =
+                    riskStyles[riskRating] ?? riskStyles["Not Rated"];
+                  return (
+                    <div
+                      className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold mt-2 ${style.bg}`}
+                    >
+                      <span>{style.icon}</span>
+                      {value}
+                    </div>
+                  );
+                })()
               ) : (
                 <p className="text-2xl font-bold">{value}</p>
               )}
+
               {subtitle && (
                 <p className="text-xs opacity-80 mt-1">{subtitle}</p>
               )}
             </div>
+
             <Icon className="h-8 w-8 text-white opacity-80" />
           </div>
         </div>
@@ -443,7 +452,9 @@ const QuestionCard = memo(
             </p>
           </div>
           <div
-            className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold ${riskStyles[rating].bg}`}
+            className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold ${
+              riskStyles[rating]?.bg ?? riskStyles["Not Rated"].bg
+            }`}
           >
             <span>{riskStyles[rating].icon}</span>
             {rating}

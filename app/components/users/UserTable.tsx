@@ -49,7 +49,7 @@ export function UserTable({ data, loading, onView, onEdit }: UserTableProps) {
       cell: (row) => (
         <div className="flex items-center gap-3 py-2">
           <Avatar className="h-10 w-10">
-            <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-medium">
+            <AvatarFallback className="bg-gradient-to-br from-green-500 to-purple-600 text-white font-medium">
               {row.name?.trim().charAt(0).toUpperCase() ||
                 row.email.charAt(0).toUpperCase()}
             </AvatarFallback>

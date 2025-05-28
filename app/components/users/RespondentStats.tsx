@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, memo } from "react";
-import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import {
   ShieldCheck,
@@ -422,13 +421,10 @@ export default function RespondentStats() {
     async function fetchData() {
       try {
         setLoading(true);
-
         const res = await fetch("/api/assessment/stats");
         const data = await res.json();
 
-        const questions: Question[] = data.answeredQuestionsDetails ?? [];
-
-        const rating = getAverageRiskRating(questions);
+        const rating = data.averageRating as RiskLevel;
 
         setStats({
           totalQuestions: data.totalQuestions,
@@ -451,7 +447,7 @@ export default function RespondentStats() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 py-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-green-50 py-4">
       <div className="max-w-6xl mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
           <ProgressCard stats={stats} loading={loading} />

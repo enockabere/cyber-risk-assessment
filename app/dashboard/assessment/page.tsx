@@ -93,7 +93,8 @@ export default function AssessmentPage() {
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-md space-y-6">
-      <h1 className="text-3xl font-bold text-indigo-700">
+      {/* Static Header */}
+      <h1 className="text-3xl font-bold text-green-700">
         🛡️ Cybersecurity Risk Assessment
       </h1>
 
@@ -110,11 +111,10 @@ export default function AssessmentPage() {
         </p>
       </div>
 
+      {/* Dynamic Section */}
       {loading ? (
-        <div className="space-y-4">
-          <Skeleton className="h-6 w-2/3" />
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-full" />
+        <div className="flex justify-center py-12">
+          <Loader2 className="w-6 h-6 animate-spin text-green-500" />
         </div>
       ) : completed ? (
         <div className="text-center space-y-4 pt-4">
@@ -126,14 +126,14 @@ export default function AssessmentPage() {
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4 pt-2">
             <Button
-              className="bg-indigo-600 text-white hover:bg-indigo-700"
+              className="bg-green-600 text-white hover:bg-green-700"
               onClick={() => router.push("/dashboard/questions")}
             >
               Start Assessment
             </Button>
             <Button
               variant="outline"
-              className="border-indigo-600 text-indigo-700 hover:bg-indigo-50"
+              className="border-green-600 text-green-700 hover:bg-green-50"
               onClick={() => setCompleted(false)}
             >
               Edit Background Info
@@ -142,7 +142,7 @@ export default function AssessmentPage() {
         </div>
       ) : (
         <>
-          <h3 className="text-md font-semibold text-indigo-800 italic">
+          <h3 className="text-md font-semibold text-green-800 italic">
             Please complete the background information to begin your assessment:
           </h3>
 
@@ -177,7 +177,7 @@ export default function AssessmentPage() {
 
             <div className="pt-2">
               <Button
-                className="bg-indigo-600 text-white w-full flex items-center justify-center"
+                className="bg-green-600 text-white w-full flex items-center justify-center"
                 onClick={handleSubmit}
                 disabled={
                   Object.keys(responses).length < fields.length || submitting

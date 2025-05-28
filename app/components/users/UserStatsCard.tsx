@@ -40,16 +40,16 @@ interface UserStatsCardProps {
 
 const colorMap = {
   indigo: {
-    bgFrom: "from-indigo-50",
-    bgTo: "to-indigo-50/50",
-    border: "border-indigo-200/60 hover:border-indigo-300/80",
-    gradientFrom: "from-indigo-500/5",
-    gradientTo: "to-indigo-600/5",
-    iconBgFrom: "from-indigo-100",
-    iconBgTo: "to-indigo-200/80",
-    iconColor: "text-indigo-600",
-    textColor: "text-indigo-700/80",
-    dotColor: "bg-indigo-500",
+    bgFrom: "from-green-50",
+    bgTo: "to-green-50/50",
+    border: "border-green-200/60 hover:border-green-300/80",
+    gradientFrom: "from-green-500/5",
+    gradientTo: "to-green-600/5",
+    iconBgFrom: "from-green-100",
+    iconBgTo: "to-green-200/80",
+    iconColor: "text-green-600",
+    textColor: "text-green-700/80",
+    dotColor: "bg-green-500",
   },
   emerald: {
     bgFrom: "from-emerald-50",

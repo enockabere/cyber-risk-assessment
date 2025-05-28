@@ -85,7 +85,7 @@ export default function QuestionsPage() {
   return (
     <div className="space-y-6 p-6 max-w-3xl mx-auto bg-white rounded shadow">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-indigo-700">
+        <h1 className="text-2xl font-bold text-green-700">
           🧠 Risk Assessment Questions
         </h1>
         <Button
@@ -93,7 +93,7 @@ export default function QuestionsPage() {
             setEditData(null);
             setShowModal(true);
           }}
-          className="bg-indigo-600 text-white"
+          className="bg-green-600 text-white"
         >
           + Add Question
         </Button>

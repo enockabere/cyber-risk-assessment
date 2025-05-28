@@ -92,7 +92,7 @@ export default function UsersPage() {
       {/* Header */}
       <div className="space-y-2">
         <div className="flex items-center gap-3">
-          <Users className="h-5 w-5 text-indigo-600" />
+          <Users className="h-5 w-5 text-green-600" />
           <div>
             <p className="text-gray-600">
               Manage and monitor all users in your system
@@ -149,8 +149,8 @@ export default function UsersPage() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b border-gray-200 dark:border-gray-800">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-900/30">
-              <User className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+            <div className="p-2 rounded-lg bg-green-50 dark:bg-green-900/30">
+              <User className="h-5 w-5 text-green-600 dark:text-green-400" />
             </div>
             <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
               All Users
@@ -160,7 +160,7 @@ export default function UsersPage() {
             <Button
               variant="outline"
               size="sm"
-              className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+              className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-green-600 dark:hover:text-green-400 transition-colors"
             >
               <Download className="h-4 w-4 mr-2" />
               Export
@@ -168,7 +168,7 @@ export default function UsersPage() {
             <Button
               size="sm"
               onClick={() => setShowCreateModal(true)}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white"
+              className="bg-green-600 hover:bg-green-700 text-white"
             >
               <Plus className="h-4 w-4 mr-2" />
               Add User

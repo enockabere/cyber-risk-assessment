@@ -24,7 +24,7 @@ export default function BackgroundViewer() {
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-md space-y-4">
-      <h1 className="text-3xl font-bold text-indigo-700">
+      <h1 className="text-3xl font-bold text-green-700">
         🎉 Welcome to cyber security risk assessment
       </h1>
 
@@ -42,7 +42,7 @@ export default function BackgroundViewer() {
       </div>
 
       <div className="pt-6">
-        <h3 className="text-sm text-indigo-800 italic mb-2">
+        <h3 className="text-sm text-green-800 italic mb-2">
           Start setting up background information below:
         </h3>
         <BackgroundInfoSetup />

@@ -36,7 +36,7 @@ export default function Sidebar() {
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full bg-white border-r border-gray-200 w-64 p-4 space-y-2">
-      <div className="text-xl font-bold text-indigo-600 px-2">CRAP</div>
+      <div className="text-xl font-bold text-green-600 px-2">CRAP</div>
 
       <nav className="flex-1 flex flex-col space-y-1 mt-6">
         {/* Dashboard */}
@@ -44,8 +44,8 @@ export default function Sidebar() {
           onClick={() => handleNavClick("/dashboard")}
           className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm w-full text-left transition ${
             pathname === "/dashboard"
-              ? "bg-indigo-100 text-indigo-700 font-semibold"
-              : "text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+              ? "bg-green-100 text-green-700 font-semibold"
+              : "text-gray-700 hover:bg-green-50 hover:text-green-600"
           }`}
         >
           <LayoutDashboard className="w-4 h-4" />
@@ -57,9 +57,10 @@ export default function Sidebar() {
           <button
             onClick={() => handleNavClick("/dashboard/assessment")}
             className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm w-full text-left transition ${
-              pathname.startsWith("/dashboard/assessment")
-                ? "bg-indigo-100 text-indigo-700 font-semibold"
-                : "text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+              pathname.startsWith("/dashboard/assessment") ||
+              pathname === "/dashboard/questions"
+                ? "bg-green-100 text-green-700 font-semibold"
+                : "text-gray-700 hover:bg-green-50 hover:text-green-600"
             }`}
           >
             <ScrollText className="w-4 h-4" />
@@ -73,8 +74,8 @@ export default function Sidebar() {
             onClick={() => handleNavClick("/dashboard/responses")}
             className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm w-full text-left transition ${
               pathname.startsWith("/dashboard/responses")
-                ? "bg-indigo-100 text-indigo-700 font-semibold"
-                : "text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+                ? "bg-green-100 text-green-700 font-semibold"
+                : "text-gray-700 hover:bg-green-50 hover:text-green-600"
             }`}
           >
             <FileBarChart2 className="w-4 h-4" />
@@ -89,8 +90,8 @@ export default function Sidebar() {
               onClick={() => handleNavClick("/dashboard/admin/background")}
               className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm w-full text-left transition ${
                 pathname.startsWith("/dashboard/admin/background")
-                  ? "bg-indigo-100 text-indigo-700 font-semibold"
-                  : "text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+                  ? "bg-green-100 text-green-700 font-semibold"
+                  : "text-gray-700 hover:bg-green-50 hover:text-green-600"
               }`}
             >
               <ShieldCheck className="w-4 h-4" />
@@ -101,8 +102,8 @@ export default function Sidebar() {
               onClick={() => handleNavClick("/dashboard/admin/users")}
               className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm w-full text-left transition ${
                 pathname.startsWith("/dashboard/admin/users")
-                  ? "bg-indigo-100 text-indigo-700 font-semibold"
-                  : "text-gray-700 hover:bg-indigo-50 hover:text-indigo-600"
+                  ? "bg-green-100 text-green-700 font-semibold"
+                  : "text-gray-700 hover:bg-green-50 hover:text-green-600"
               }`}
             >
               <UsersRound className="w-4 h-4" />

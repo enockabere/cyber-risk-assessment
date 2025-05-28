@@ -3,33 +3,73 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import prisma from "@/app/lib/prisma";
 
-// Numeric weights for RiskRating enums
-const ratingWeights = {
+// Type-safe enums
+type RiskLevel = "VERY_LOW" | "LOW" | "MEDIUM" | "HIGH" | "VERY_HIGH";
+type RiskRating = "SUSTAINABLE" | "MODERATE" | "SEVERE" | "CRITICAL";
+
+// Risk rating weights
+const ratingWeights: Record<RiskRating, number> = {
   SUSTAINABLE: 0,
   MODERATE: 1,
   SEVERE: 2,
   CRITICAL: 3,
 };
 
-// Ordered enum keys
-const orderedRatings = ["SUSTAINABLE", "MODERATE", "SEVERE", "CRITICAL"];
+const orderedRatings: RiskRating[] = [
+  "SUSTAINABLE",
+  "MODERATE",
+  "SEVERE",
+  "CRITICAL",
+];
 
-// Convert enum to title case for frontend
-function normalizeRating(
-  rating: string | null
-): "Sustainable" | "Moderate" | "Severe" | "Critical" | null {
-  switch (rating) {
-    case "SUSTAINABLE":
-      return "Sustainable";
-    case "MODERATE":
-      return "Moderate";
-    case "SEVERE":
-      return "Severe";
-    case "CRITICAL":
-      return "Critical";
-    default:
-      return null;
-  }
+// Risk matrix definition
+const riskMatrix: Record<RiskLevel, Record<RiskLevel, RiskRating>> = {
+  VERY_LOW: {
+    VERY_LOW: "SUSTAINABLE",
+    LOW: "SUSTAINABLE",
+    MEDIUM: "SUSTAINABLE",
+    HIGH: "MODERATE",
+    VERY_HIGH: "SEVERE",
+  },
+  LOW: {
+    VERY_LOW: "SUSTAINABLE",
+    LOW: "SUSTAINABLE",
+    MEDIUM: "MODERATE",
+    HIGH: "SEVERE",
+    VERY_HIGH: "CRITICAL",
+  },
+  MEDIUM: {
+    VERY_LOW: "SUSTAINABLE",
+    LOW: "MODERATE",
+    MEDIUM: "MODERATE",
+    HIGH: "SEVERE",
+    VERY_HIGH: "CRITICAL",
+  },
+  HIGH: {
+    VERY_LOW: "SUSTAINABLE",
+    LOW: "MODERATE",
+    MEDIUM: "SEVERE",
+    HIGH: "CRITICAL",
+    VERY_HIGH: "CRITICAL",
+  },
+  VERY_HIGH: {
+    VERY_LOW: "MODERATE",
+    LOW: "SEVERE",
+    MEDIUM: "SEVERE",
+    HIGH: "CRITICAL",
+    VERY_HIGH: "CRITICAL",
+  },
+};
+
+// Guard to check if a string is a RiskLevel
+function isRiskLevel(value: string): value is RiskLevel {
+  return ["VERY_LOW", "LOW", "MEDIUM", "HIGH", "VERY_HIGH"].includes(value);
+}
+
+// Normalize for display
+function normalizeRating(rating: RiskRating | null): string | null {
+  if (!rating) return null;
+  return rating.charAt(0) + rating.slice(1).toLowerCase(); // e.g. CRITICAL -> Critical
 }
 
 export async function GET() {
@@ -40,47 +80,49 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email: userEmail },
-  });
+  const user = await prisma.user.findUnique({ where: { email: userEmail } });
 
   if (!user) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  const backgroundFieldsCount = await prisma.backgroundField.count();
-  const backgroundResponsesCount = await prisma.backgroundResponse.count({
-    where: { userId: user.id },
-  });
+  const [backgroundFieldsCount, backgroundResponsesCount, totalQuestions] =
+    await Promise.all([
+      prisma.backgroundField.count(),
+      prisma.backgroundResponse.count({ where: { userId: user.id } }),
+      prisma.question.count(),
+    ]);
+
   const backgroundCompleted =
     backgroundResponsesCount === backgroundFieldsCount;
-
-  const totalQuestions = await prisma.question.count();
 
   const latestSubmission = await prisma.submission.findFirst({
     where: { userId: user.id },
     orderBy: { createdAt: "desc" },
     include: {
       answers: {
-        include: {
-          selectedOption: true,
-        },
+        include: { selectedOption: true },
       },
     },
   });
 
-  const answers = latestSubmission?.answers || [];
+  const answers = latestSubmission?.answers ?? [];
   const answeredQuestions = answers.length;
   const allQuestionsAnswered = answeredQuestions === totalQuestions;
-
   const lastSubmissionDate = latestSubmission?.createdAt ?? null;
 
-  const ratingScores = answers
-    .map((a) => a.selectedOption.rating)
-    .filter(
-      (r): r is keyof typeof ratingWeights =>
-        r !== null && r !== undefined && r in ratingWeights
-    );
+  // Calculate average rating
+  const ratingScores: RiskRating[] = answers
+    .map((a) => {
+      const prob = a.selectedOption.probability?.toUpperCase();
+      const impact = a.selectedOption.impact?.toUpperCase();
+
+      if (prob && impact && isRiskLevel(prob) && isRiskLevel(impact)) {
+        return riskMatrix[prob][impact];
+      }
+      return null;
+    })
+    .filter((r): r is RiskRating => r !== null);
 
   let averageRating: string | null = null;
   if (ratingScores.length > 0) {
@@ -89,10 +131,10 @@ export async function GET() {
       0
     );
     const avgIndex = Math.round(totalScore / ratingScores.length);
-    averageRating = orderedRatings[avgIndex];
+    averageRating = normalizeRating(orderedRatings[avgIndex]);
   }
 
-  const normalizedRating = normalizeRating(averageRating);
+  console.log("averageRating:", averageRating);
 
   return NextResponse.json({
     totalQuestions,
@@ -100,6 +142,6 @@ export async function GET() {
     backgroundCompleted,
     allQuestionsAnswered,
     lastSubmissionDate,
-    averageRating: normalizedRating,
+    averageRating,
   });
 }

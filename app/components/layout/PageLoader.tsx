@@ -10,7 +10,7 @@ export default function PageLoader() {
 
   return (
     <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex items-center justify-center z-50">
-      <Loader className="h-8 w-8 animate-spin text-indigo-600" />
+      <Loader className="h-8 w-8 animate-spin text-green-600" />
     </div>
   );
 }

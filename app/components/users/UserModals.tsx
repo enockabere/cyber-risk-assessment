@@ -16,7 +16,7 @@ export function showUserViewModal(user: User) {
     html: `
       <div class="text-left space-y-3 p-4">
         <div class="flex items-center space-x-3 mb-4">
-          <div class="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-semibold text-lg">
+          <div class="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-purple-600 flex items-center justify-center text-white font-semibold text-lg">
             ${(user.name || user.email).charAt(0).toUpperCase()}
           </div>
           <div>

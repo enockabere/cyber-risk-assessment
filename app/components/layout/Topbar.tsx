@@ -29,10 +29,10 @@ export default function Topbar() {
   const role = user?.role || "Unknown";
 
   return (
-    <header className="w-full bg-gradient-to-r from-indigo-50 to-white border-b border-indigo-100 px-6 py-4 flex items-center justify-between shadow-sm">
+    <header className="w-full bg-gradient-to-r from-green-50 to-white border-b border-green-100 px-6 py-4 flex items-center justify-between shadow-sm">
       {/* Title & Breadcrumbs */}
       <div className="flex flex-col gap-1">
-        <h4 className="text-2xl font-bold text-indigo-900 tracking-tight">
+        <h4 className="text-2xl font-bold text-green-900 tracking-tight">
           {title}
         </h4>
         <nav className="flex items-center text-sm text-gray-500">
@@ -44,7 +44,7 @@ export default function Topbar() {
               {crumb.href ? (
                 <Link
                   href={crumb.href}
-                  className="hover:underline text-indigo-600 hover:text-indigo-800"
+                  className="hover:underline text-green-600 hover:text-green-800"
                 >
                   {crumb.label}
                 </Link>
@@ -60,21 +60,19 @@ export default function Topbar() {
       <DropdownMenu>
         <DropdownMenuTrigger className="flex items-center gap-2 outline-none">
           {role.toLowerCase() === "respondent" && (
-            <School className="w-5 h-5 text-indigo-600" />
+            <School className="w-5 h-5 text-green-600" />
           )}
-          <UserCircle className="w-8 h-8 text-indigo-500" />
-          <ChevronDown className="w-4 h-4 text-indigo-500" />
+          <UserCircle className="w-8 h-8 text-green-500" />
+          <ChevronDown className="w-4 h-4 text-green-500" />
         </DropdownMenuTrigger>
 
         <DropdownMenuContent align="end" className="w-64">
           <DropdownMenuLabel>
-            <div className="text-sm font-medium text-indigo-900">
+            <div className="text-sm font-medium text-green-900">
               {user?.name || user?.email}
             </div>
-            <div className="text-xs text-indigo-600 truncate">
-              {user?.email}
-            </div>
-            <span className="inline-block mt-2 px-2 py-0.5 text-xs font-semibold bg-indigo-200 text-indigo-800 rounded">
+            <div className="text-xs text-green-600 truncate">{user?.email}</div>
+            <span className="inline-block mt-2 px-2 py-0.5 text-xs font-semibold bg-green-200 text-green-800 rounded">
               {role}
             </span>
           </DropdownMenuLabel>
