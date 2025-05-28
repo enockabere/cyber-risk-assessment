@@ -29,6 +29,7 @@ export default function AssessmentPage() {
   const router = useRouter();
   const { setTitle } = useTopbar();
   const { setBreadcrumbs } = useBreadcrumbs();
+  const [navigating, setNavigating] = useState(false);
 
   useEffect(() => {
     setTitle("Cybersecurity Assessment");
@@ -127,16 +128,39 @@ export default function AssessmentPage() {
           <div className="flex flex-col sm:flex-row justify-center gap-4 pt-2">
             <Button
               className="bg-green-600 text-white hover:bg-green-700"
-              onClick={() => router.push("/dashboard/questions")}
+              disabled={navigating}
+              onClick={() => {
+                setNavigating(true);
+                router.push("/dashboard/questions");
+              }}
             >
-              Start Assessment
+              {navigating ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Redirecting...
+                </>
+              ) : (
+                "Start Assessment"
+              )}
             </Button>
+
             <Button
               variant="outline"
               className="border-green-600 text-green-700 hover:bg-green-50"
-              onClick={() => setCompleted(false)}
+              disabled={navigating}
+              onClick={() => {
+                setNavigating(true);
+                setCompleted(false);
+              }}
             >
-              Edit Background Info
+              {navigating ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Opening...
+                </>
+              ) : (
+                "Edit Background Info"
+              )}
             </Button>
           </div>
         </div>

@@ -15,11 +15,31 @@ export async function POST(req: Request) {
       );
     }
 
+    // Check if email is already used
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return NextResponse.json(
         { message: "Email already registered" },
         { status: 400 }
+      );
+    }
+
+    // 🔒 Restrict one account per domain
+    const domain = email.split("@")[1];
+    const userFromSameDomain = await prisma.user.findFirst({
+      where: {
+        email: {
+          endsWith: `@${domain}`,
+        },
+      },
+    });
+
+    if (userFromSameDomain) {
+      return NextResponse.json(
+        {
+          message: `A user from ${domain} has already registered. Only one account per institution is allowed.`,
+        },
+        { status: 409 }
       );
     }
 

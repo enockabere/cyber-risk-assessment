@@ -368,54 +368,95 @@ const RiskRatingCard = memo(
   }
 );
 
-const CTASection = memo(({ stats }: { stats: StatsData | null }) => {
-  const total = stats?.totalQuestions ?? 0;
-  const answered = stats?.answeredQuestions ?? 0;
-  const progress = total > 0 ? Math.round((answered / total) * 100) : 0;
+const CTASection = memo(
+  ({
+    stats,
+    onContinue,
+    loadingRedirect,
+  }: {
+    stats: StatsData | null;
+    onContinue: () => void;
+    loadingRedirect: boolean;
+  }) => {
+    const total = stats?.totalQuestions ?? 0;
+    const answered = stats?.answeredQuestions ?? 0;
+    const progress = total > 0 ? Math.round((answered / total) * 100) : 0;
 
-  let title = "Start Your Cybersecurity Assessment";
-  let description = "Get personalized insights into your security posture.";
-  let buttonLabel = "Begin Assessment";
-  let gradient = "from-blue-600 to-purple-600";
+    let title = "Start Your Cybersecurity Assessment";
+    let description = "Get personalized insights into your security posture.";
+    let buttonLabel = "Begin Assessment";
+    let gradient = "from-blue-600 to-purple-600";
 
-  if (answered > 0 && progress < 100) {
-    title = "Continue Your Assessment";
-    description = `You're ${progress}% done. Complete to see your full risk analysis.`;
-    buttonLabel = "Continue Assessment";
-    gradient = "from-amber-500 to-orange-600";
-  } else if (progress === 100) {
-    title = "Update Your Security Assessment";
-    description = "Retake the assessment to stay up to date.";
-    buttonLabel = "Retake Assessment";
-    gradient = "from-green-500 to-teal-600";
-  }
+    if (answered > 0 && progress < 100) {
+      title = "Continue Your Assessment";
+      description = `You're ${progress}% done. Complete to see your full risk analysis.`;
+      buttonLabel = "Continue Assessment";
+      gradient = "from-amber-500 to-orange-600";
+    } else if (progress === 100) {
+      title = "Update Your Security Assessment";
+      description = "Retake the assessment to stay up to date.";
+      buttonLabel = "Retake Assessment";
+      gradient = "from-green-500 to-teal-600";
+    }
 
-  return (
-    <div className="col-span-full mt-12">
-      <div
-        className={`bg-gradient-to-br ${gradient} rounded-3xl p-8 text-white text-center shadow-xl`}
-      >
-        <div className="max-w-xl mx-auto space-y-4">
-          <TrendingUp className="w-10 h-10 mx-auto" />
-          <h2 className="text-2xl font-bold">{title}</h2>
-          <p className="text-white/90">{description}</p>
-          <Button
-            onClick={() => (window.location.href = "/dashboard/assessment")}
-            className="bg-white text-gray-800 hover:bg-gray-100"
-          >
-            {buttonLabel}
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
+    return (
+      <div className="col-span-full mt-12">
+        <div
+          className={`bg-gradient-to-br ${gradient} rounded-3xl p-8 text-white text-center shadow-xl`}
+        >
+          <div className="max-w-xl mx-auto space-y-4">
+            <TrendingUp className="w-10 h-10 mx-auto" />
+            <h2 className="text-2xl font-bold">{title}</h2>
+            <p className="text-white/90">{description}</p>
+
+            <Button
+              onClick={onContinue}
+              className="bg-white text-gray-800 hover:bg-gray-100"
+              disabled={loadingRedirect}
+            >
+              {loadingRedirect ? (
+                <>
+                  <svg
+                    className="animate-spin h-4 w-4 text-gray-800 mr-2"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v8z"
+                    ></path>
+                  </svg>
+                  Redirecting...
+                </>
+              ) : (
+                <>
+                  {buttonLabel}
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </>
+              )}
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 export default function RespondentStats() {
   const [stats, setStats] = useState<StatsData | null>(null);
   const [averageRating, setAverageRating] = useState<RiskLevel>(null);
   const [loading, setLoading] = useState(true);
+  const [loadingRedirect, setLoadingRedirect] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -457,7 +498,14 @@ export default function RespondentStats() {
             lastSubmissionDate={stats?.lastSubmissionDate ?? null}
           />
         </div>
-        <CTASection stats={stats} />
+        <CTASection
+          stats={stats}
+          loadingRedirect={loadingRedirect}
+          onContinue={() => {
+            setLoadingRedirect(true);
+            window.location.href = "/dashboard/assessment";
+          }}
+        />
       </div>
     </div>
   );

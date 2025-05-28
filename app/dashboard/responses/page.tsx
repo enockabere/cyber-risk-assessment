@@ -20,6 +20,7 @@ import {
   FileText,
   Activity,
 } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 // Mock components - replace with your actual imports
 const Skeleton = ({ className }: { className: string }) => (
@@ -300,6 +301,8 @@ const RiskMatrixChart = memo(({ questions }: { questions: Question[] }) => {
 // Risk Distribution Chart
 const RiskDistributionChart = memo(
   ({ questions }: { questions: Question[] }) => {
+    const totalQuestions = questions.length;
+
     const riskCounts = questions.reduce((acc, q) => {
       const rating = calculateRiskRating(
         q.selectedOption.probability,
@@ -311,9 +314,24 @@ const RiskDistributionChart = memo(
 
     const chartData = Object.entries(riskCounts).map(([rating, count]) => ({
       name: rating,
-      value: count,
+      value: parseFloat(((count / totalQuestions) * 100).toFixed(2)),
+      count,
       color: riskColors[rating as keyof typeof riskColors] || "#gray",
     }));
+
+    const CustomTooltip = ({ active, payload }: any) => {
+      if (active && payload && payload.length) {
+        const data = payload[0].payload;
+        return (
+          <div className="bg-white text-gray-800 p-2 text-xs rounded shadow">
+            <strong>{data.name}</strong>
+            <div>{data.value}%</div>
+            <div>{data.count} responses</div>
+          </div>
+        );
+      }
+      return null;
+    };
 
     return (
       <div className="h-[200px] w-full">
@@ -327,12 +345,13 @@ const RiskDistributionChart = memo(
               outerRadius={80}
               paddingAngle={2}
               dataKey="value"
+              label={({ name, value }: any) => `${name}: ${value}%`}
             >
               {chartData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
-            <Tooltip />
+            <Tooltip content={<CustomTooltip />} />
           </PieChart>
         </ResponsiveContainer>
       </div>
@@ -490,6 +509,7 @@ const QuestionCard = memo(
 
 // Main Component
 export default function ResponsesPage() {
+  const { data: session } = useSession();
   const [backgroundResponses, setBackgroundResponses] = useState<
     BackgroundResponse[]
   >([]);
@@ -569,11 +589,13 @@ export default function ResponsesPage() {
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div>
             <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-              Risk Assessment Dashboard
+              Cyber Security Risk Assessment Results
             </h1>
             <p className="text-gray-600 mt-2">
               Comprehensive overview of your risk profile and mitigation
-              strategies
+              strategies for{" "}
+              <strong>{session?.user?.name || "your institution"}</strong>,
+              located in Nairobi County, Kenya.
             </p>
           </div>
           {averageRating && (
@@ -635,12 +657,18 @@ export default function ResponsesPage() {
             title="Risk Categories"
             value={
               new Set(
-                questions.map((q) =>
-                  calculateRiskRating(
-                    q.selectedOption.probability,
-                    q.selectedOption.impact
+                questions
+                  .map((q) =>
+                    calculateRiskRating(
+                      q.selectedOption.probability,
+                      q.selectedOption.impact
+                    )
                   )
-                )
+                  .filter((rating) =>
+                    ["Sustainable", "Moderate", "Severe", "Critical"].includes(
+                      rating
+                    )
+                  )
               ).size
             }
             subtitle="Distinct risk levels identified"

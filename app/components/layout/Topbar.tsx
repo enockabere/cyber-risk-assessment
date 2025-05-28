@@ -66,20 +66,23 @@ export default function Topbar() {
           <ChevronDown className="w-4 h-4 text-green-500" />
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent align="end" className="w-64">
+        <DropdownMenuContent
+          align="end"
+          className="w-64 bg-white border border-gray-200 shadow-lg rounded-md p-2 z-50"
+        >
           <DropdownMenuLabel>
             <div className="text-sm font-medium text-green-900">
-              {user?.name || user?.email}
+              {user?.name}
             </div>
             <div className="text-xs text-green-600 truncate">{user?.email}</div>
-            <span className="inline-block mt-2 px-2 py-0.5 text-xs font-semibold bg-green-200 text-green-800 rounded">
-              {role}
-            </span>
           </DropdownMenuLabel>
 
           <DropdownMenuSeparator />
 
-          <DropdownMenuItem asChild>
+          <DropdownMenuItem
+            asChild
+            className="cursor-pointer px-3 py-2 rounded-md text-sm hover:bg-green-50 transition-colors"
+          >
             <Link href="/dashboard/profile" className="flex items-center gap-2">
               <User className="w-4 h-4" />
               Profile
@@ -88,7 +91,7 @@ export default function Topbar() {
 
           <DropdownMenuItem
             onClick={() => signOut({ callbackUrl: "/" })}
-            className="text-red-600"
+            className="text-red-600 cursor-pointer px-3 py-2 rounded-md text-sm hover:bg-red-50 transition-colors"
           >
             <LogOut className="w-4 h-4 mr-2" />
             Logout

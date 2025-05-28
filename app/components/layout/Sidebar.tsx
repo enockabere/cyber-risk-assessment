@@ -113,6 +113,22 @@ export default function Sidebar() {
         )}
       </nav>
 
+      {session?.user && (
+        <div className="flex items-center gap-3 mt-4 px-3 py-2 rounded-md bg-gray-100">
+          <div className="w-8 h-8 rounded-full bg-green-200 flex items-center justify-center text-green-800 font-bold uppercase">
+            {session.user.name?.charAt(0)}
+          </div>
+          <div className="flex flex-col">
+            <span className="text-sm font-medium text-gray-800 truncate">
+              {session.user.name}
+            </span>
+            <span className="text-xs text-gray-500 truncate">
+              {session.user.email}
+            </span>
+          </div>
+        </div>
+      )}
+
       <Button
         variant="ghost"
         className="text-red-500 hover:bg-red-100 justify-start"
