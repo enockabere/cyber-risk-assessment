@@ -69,6 +69,12 @@ export default function QuestionsPage() {
   };
 
   const handleSubmitAnswers = async () => {
+    const unanswered = questions.filter((q) => !answers[q.id]);
+    if (unanswered.length > 0) {
+      toast.error("Please answer all questions before submitting.");
+      return;
+    }
+
     setSubmitting(true);
 
     const payload = Object.entries(answers).map(

@@ -123,7 +123,8 @@ export default function Sidebar() {
               {session.user.name}
             </span>
             <span className="text-xs text-gray-500 truncate">
-              {session.user.email}
+              {/* {session.user.email} */}
+              nairobiuniversity@ac.ke
             </span>
           </div>
         </div>
