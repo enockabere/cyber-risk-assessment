@@ -5,36 +5,127 @@ import ReactSpeedometer from "react-d3-speedometer";
 interface Props {
   value: number;
   assetCount: number;
+  maturityLevel?: {
+    level: string;
+    description: string;
+    color: string;
+  } | null;
+  loading?: boolean;
 }
-export default function MaturityGauge({ value, assetCount }: Props) {
+
+export default function MaturityGauge({
+  value,
+  assetCount,
+  maturityLevel,
+  loading = false,
+}: Props) {
+  // Dynamic color based on maturity score
+  const getScoreColor = (score: number): string => {
+    if (score >= 80) return "text-green-600";
+    if (score >= 60) return "text-yellow-600";
+    if (score >= 40) return "text-orange-600";
+    return "text-red-600";
+  };
+
+  // Enhanced speedometer colors - more segments for better granularity
+  const getSpeedometerColors = (): string[] => {
+    // 5 segments: 0-20, 20-40, 40-60, 60-80, 80-100
+    return [
+      "#dc2626", // red (0-20) - Critical
+      "#ea580c", // orange-red (20-40) - Poor
+      "#d97706", // orange (40-60) - Basic
+      "#eab308", // yellow (60-80) - Developing
+      "#16a34a", // green (80-100) - Advanced
+    ];
+  };
+
+  if (loading) {
+    return (
+      <div className="bg-white rounded-3xl p-6 shadow border border-gray-100 text-center">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          Maturity Index
+        </h3>
+        <div className="flex justify-center items-center h-[150px]">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+        <p className="mt-4 text-gray-400">Loading...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white rounded-3xl p-6 shadow border border-gray-100 text-center">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">
         Maturity Index
       </h3>
+
       <div className="flex justify-center">
         <ReactSpeedometer
           value={value}
           minValue={0}
           maxValue={100}
-          segments={3}
-          segmentColors={["#2ecc71", "#f1c40f", "#c0392b"]}
-          currentValueText={`Maturity Index: ${value}`}
-          needleColor="#000000"
-          ringWidth={30}
+          segments={5}
+          segmentColors={getSpeedometerColors()}
+          currentValueText={`${value}%`}
+          needleColor="#1f2937"
+          ringWidth={25}
           needleHeightRatio={0.7}
           width={220}
           height={150}
-          textColor="#333"
+          textColor="#374151"
+          valueFormat=".0f"
+          customSegmentStops={[0, 20, 40, 60, 80, 100]}
         />
       </div>
 
-      <p className="mt-4 text-green-700 text-xl font-semibold">{value}</p>
-
-      <div className="mt-2 text-sm text-gray-600">
-        Total Assets Assigned:{" "}
-        <span className="font-semibold text-gray-800">{assetCount}</span>
+      {/* Dynamic score display */}
+      <div className="mt-4">
+        <p className={`text-2xl font-bold ${getScoreColor(value)}`}>{value}</p>
+        {maturityLevel && (
+          <>
+            <p className={`text-sm font-semibold ${maturityLevel.color} mt-1`}>
+              {maturityLevel.level}
+            </p>
+            <p className="text-xs text-gray-600 mt-2 leading-relaxed">
+              {maturityLevel.description}
+            </p>
+          </>
+        )}
       </div>
+
+      {/* Asset count */}
+      <div className="mt-4 pt-4 border-t border-gray-100">
+        <div className="text-sm text-gray-600">
+          Assets Assigned:{" "}
+          <span className="font-semibold text-gray-800">{assetCount}</span>
+        </div>
+      </div>
+
+      {/* Progress indicators */}
+      {value > 0 && (
+        <div className="mt-4 pt-4 border-t border-gray-100">
+          <div className="flex justify-between text-xs text-gray-500 mb-2">
+            <span>Initial</span>
+            <span>Basic</span>
+            <span>Developing</span>
+            <span>Advanced</span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div
+              className={`h-2 rounded-full transition-all duration-500 ${
+                value >= 80
+                  ? "bg-green-500"
+                  : value >= 60
+                  ? "bg-yellow-500"
+                  : value >= 40
+                  ? "bg-orange-500"
+                  : "bg-red-500"
+              }`}
+              style={{ width: `${Math.min(value, 100)}%` }}
+            ></div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

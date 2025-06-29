@@ -6,12 +6,20 @@ import RiskRatingCard from "../respondent-stats/RiskRatingCard";
 import CTASection from "../respondent-stats/CTASection";
 import MaturityGauge from "../respondent-stats/MaturityGauge";
 import { StatsData, RiskLevel } from "@/app/types/assessment";
-import { calculateMaturityIndex } from "@/app/lib/utils/assessment-utils";
+import {
+  calculateMaturityIndex,
+  getMaturityLevel,
+} from "@/app/lib/utils/assessment-utils";
 
 export default function RespondentStats() {
   const [stats, setStats] = useState<StatsData | null>(null);
   const [averageRating, setAverageRating] = useState<RiskLevel>(null);
-  const [maturityIndex, setMaturityIndex] = useState<number>(0); // ✅ Add this
+  const [maturityIndex, setMaturityIndex] = useState<number>(0);
+  const [maturityLevel, setMaturityLevel] = useState<{
+    level: string;
+    description: string;
+    color: string;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadingRedirect, setLoadingRedirect] = useState(false);
 
@@ -24,7 +32,10 @@ export default function RespondentStats() {
         const data = await res.json();
         setStats(data);
         setAverageRating(data.averageRating);
-        setMaturityIndex(calculateMaturityIndex(data));
+
+        const calculatedMaturity = calculateMaturityIndex(data);
+        setMaturityIndex(calculatedMaturity);
+        setMaturityLevel(getMaturityLevel(calculatedMaturity));
       } catch (error) {
         console.error("❌ Failed to fetch stats", error);
       } finally {
@@ -48,6 +59,8 @@ export default function RespondentStats() {
           <MaturityGauge
             value={maturityIndex}
             assetCount={stats?.assetCount ?? 0}
+            maturityLevel={maturityLevel}
+            loading={loading}
           />
         </div>
         <CTASection

@@ -6,7 +6,6 @@ import prisma from "@/app/lib/prisma";
 type RiskLevel = "VERY_LOW" | "LOW" | "MEDIUM" | "HIGH" | "VERY_HIGH";
 type RiskRating = "SUSTAINABLE" | "MODERATE" | "SEVERE" | "CRITICAL";
 
-// Risk rating weights
 const ratingWeights: Record<RiskRating, number> = {
   SUSTAINABLE: 0,
   MODERATE: 1,
@@ -21,7 +20,6 @@ const orderedRatings: RiskRating[] = [
   "CRITICAL",
 ];
 
-// Risk matrix definition
 const riskMatrix: Record<RiskLevel, Record<RiskLevel, RiskRating>> = {
   VERY_LOW: {
     VERY_LOW: "SUSTAINABLE",
@@ -60,91 +58,122 @@ const riskMatrix: Record<RiskLevel, Record<RiskLevel, RiskRating>> = {
   },
 };
 
-// Guard to check if a string is a RiskLevel
 function isRiskLevel(value: string): value is RiskLevel {
   return ["VERY_LOW", "LOW", "MEDIUM", "HIGH", "VERY_HIGH"].includes(value);
 }
 
-// Normalize for display
 function normalizeRating(rating: RiskRating | null): string | null {
   if (!rating) return null;
-  return rating.charAt(0) + rating.slice(1).toLowerCase(); // e.g. CRITICAL -> Critical
+  return rating.charAt(0) + rating.slice(1).toLowerCase();
 }
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
-  const userEmail = session?.user?.email;
+  try {
+    console.log("📊 Stats API called");
 
-  if (!userEmail) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+    const session = await getServerSession(authOptions);
+    const userEmail = session?.user?.email;
 
-  const user = await prisma.user.findUnique({ where: { email: userEmail } });
+    if (!userEmail) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-  if (!user) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
-  }
+    const user = await prisma.user.findUnique({ where: { email: userEmail } });
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
 
-  const [
-    backgroundFieldsCount,
-    backgroundResponsesCount,
-    totalQuestions,
-    assetCount,
-  ] = await Promise.all([
-    prisma.backgroundField.count(),
-    prisma.backgroundResponse.count({ where: { userId: user.id } }),
-    prisma.question.count(),
-    prisma.universityAsset.count({ where: { universityUserId: user.id } }), // ✅ new
-  ]);
+    // Fetch user's assets
+    const userAssets = await prisma.universityAsset.findMany({
+      where: { universityUserId: user.id },
+      select: { assetId: true },
+    });
+    const userAssetIds = userAssets.map((a) => a.assetId);
 
-  const backgroundCompleted =
-    backgroundResponsesCount === backgroundFieldsCount;
-
-  const latestSubmission = await prisma.submission.findFirst({
-    where: { userId: user.id },
-    orderBy: { createdAt: "desc" },
-    include: {
-      answers: {
-        include: { selectedOption: true },
+    // Fetch only relevant questions: global or related to user's assets
+    const relevantQuestions = await prisma.question.findMany({
+      where: {
+        OR: [{ assetId: null }, { assetId: { in: userAssetIds } }],
       },
-    },
-  });
+      select: { id: true },
+    });
+    const relevantQuestionIds = relevantQuestions.map((q) => q.id);
+    const totalQuestions = relevantQuestionIds.length;
 
-  const answers = latestSubmission?.answers ?? [];
-  const answeredQuestions = answers.length;
-  const allQuestionsAnswered = answeredQuestions === totalQuestions;
-  const lastSubmissionDate = latestSubmission?.createdAt ?? null;
-
-  // Calculate average rating
-  const ratingScores: RiskRating[] = answers
-    .map((a) => {
-      const prob = a.selectedOption.probability?.toUpperCase();
-      const impact = a.selectedOption.impact?.toUpperCase();
-
-      if (prob && impact && isRiskLevel(prob) && isRiskLevel(impact)) {
-        return riskMatrix[prob][impact];
-      }
-      return null;
-    })
-    .filter((r): r is RiskRating => r !== null);
-
-  let averageRating: string | null = null;
-  if (ratingScores.length > 0) {
-    const totalScore = ratingScores.reduce(
-      (sum, r) => sum + ratingWeights[r],
-      0
+    const [backgroundFieldsCount, backgroundResponsesCount] = await Promise.all(
+      [
+        prisma.backgroundField.count(),
+        prisma.backgroundResponse.count({ where: { userId: user.id } }),
+      ]
     );
-    const avgIndex = Math.round(totalScore / ratingScores.length);
-    averageRating = normalizeRating(orderedRatings[avgIndex]);
-  }
 
-  return NextResponse.json({
-    totalQuestions,
-    answeredQuestions,
-    backgroundCompleted,
-    allQuestionsAnswered,
-    lastSubmissionDate,
-    averageRating,
-    assetCount,
-  });
+    const backgroundCompleted =
+      backgroundFieldsCount > 0 &&
+      backgroundResponsesCount === backgroundFieldsCount;
+
+    const latestSubmission = await prisma.submission.findFirst({
+      where: { userId: user.id },
+      orderBy: { createdAt: "desc" },
+      include: {
+        answers: {
+          include: { selectedOption: true },
+        },
+      },
+    });
+
+    const answers = latestSubmission?.answers ?? [];
+    const relevantAnswers = answers.filter((a) =>
+      relevantQuestionIds.includes(a.questionId)
+    );
+    const answeredQuestions = relevantAnswers.length;
+    const allQuestionsAnswered =
+      totalQuestions > 0 && answeredQuestions === totalQuestions;
+    const lastSubmissionDate = latestSubmission?.createdAt ?? null;
+
+    const ratingScores: RiskRating[] = relevantAnswers
+      .map((a) => {
+        const prob = a.selectedOption.probability?.toUpperCase();
+        const impact = a.selectedOption.impact?.toUpperCase();
+
+        if (prob && impact && isRiskLevel(prob) && isRiskLevel(impact)) {
+          return riskMatrix[prob][impact];
+        }
+        return null;
+      })
+      .filter((r): r is RiskRating => r !== null);
+
+    let averageRating: string | null = null;
+    if (ratingScores.length > 0) {
+      const totalScore = ratingScores.reduce(
+        (sum, r) => sum + ratingWeights[r],
+        0
+      );
+      const avgIndex = Math.round(totalScore / ratingScores.length);
+      averageRating = normalizeRating(orderedRatings[avgIndex]);
+    }
+
+    const assetCount = userAssetIds.length;
+
+    const result = {
+      totalQuestions,
+      answeredQuestions,
+      backgroundCompleted,
+      allQuestionsAnswered,
+      lastSubmissionDate,
+      averageRating,
+      assetCount,
+    };
+
+    console.log("📤 Returning result:", result);
+    return NextResponse.json(result);
+  } catch (error) {
+    console.error("❌ Stats API error:", error);
+    return NextResponse.json(
+      {
+        error: "Internal server error",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 }
+    );
+  }
 }
