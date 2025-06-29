@@ -14,30 +14,16 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-
-    // Check if email is already used
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) {
-      return NextResponse.json(
-        { message: "Email already registered" },
-        { status: 400 }
-      );
-    }
-
-    // 🔒 Restrict one account per domain
-    const domain = email.split("@")[1];
-    const userFromSameDomain = await prisma.user.findFirst({
+    const userFromSameUniversity = await prisma.user.findFirst({
       where: {
-        email: {
-          endsWith: `@${domain}`,
-        },
+        name: name,
       },
     });
 
-    if (userFromSameDomain) {
+    if (userFromSameUniversity) {
       return NextResponse.json(
         {
-          message: `A user from ${domain} has already registered. Only one account per institution is allowed.`,
+          message: `${name} has already been registered. Only one account per university is allowed.`,
         },
         { status: 409 }
       );
@@ -66,8 +52,6 @@ export async function POST(req: Request) {
         createdAt: true,
       },
     });
-
-    console.log("✅ User registered:", user);
     return NextResponse.json({ message: "User created", user });
   } catch (error) {
     console.error("❌ Register API error:", error);
