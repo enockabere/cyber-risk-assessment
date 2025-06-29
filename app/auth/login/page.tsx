@@ -90,7 +90,7 @@ export default function LoginPage() {
               <Bot className="w-6 h-6 text-white transition-all duration-300" />
             </div>
             <span className="text-2xl font-bold text-white tracking-tight">
-              CRAP
+              CSRAP
             </span>
           </div>
           <h1 className="text-3xl font-bold leading-tight tracking-tight">
@@ -114,6 +114,10 @@ export default function LoginPage() {
               mounted={mounted}
             />
           ))}
+        </div>
+        <div className="mt-auto pt-6 text-xs text-green-100 text-center w-full">
+          <p>United States International University Africa</p>
+          <p className="text-green-200 mt-1">© Beatrice Akoth Owino</p>
         </div>
       </div>
 
@@ -243,7 +247,7 @@ export default function LoginPage() {
             </form>
 
             <div className="mt-4 text-center text-xs text-gray-500">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <a
                 href="/auth/register"
                 className="font-medium text-green-600 hover:text-green-500 transition-colors duration-200 hover:underline"

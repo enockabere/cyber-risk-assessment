@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { Loader2 } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import { useTopbar } from "@/app/context/TopbarContext";
 import { useBreadcrumbs } from "@/app/context/BreadcrumbContext";
@@ -18,6 +17,8 @@ interface Question {
     text: string;
   }[];
   selectedOptionId?: string;
+  isAssetLinked?: boolean;
+  assetName?: string | null;
 }
 
 export default function QuestionsPage() {
@@ -54,7 +55,7 @@ export default function QuestionsPage() {
           }
         });
         setAnswers(initialAnswers);
-      } catch (error) {
+      } catch {
         toast.error("Failed to load questions");
       } finally {
         setLoading(false);
@@ -117,6 +118,14 @@ export default function QuestionsPage() {
               <p className="font-medium text-gray-800">
                 {q.position}. {q.text}
               </p>
+              {q.isAssetLinked && q.assetName && (
+                <p className="text-xs italic text-gray-500">
+                  🔒 Asset-specific question:{" "}
+                  <span className="text-green-700 font-medium">
+                    {q.assetName}
+                  </span>
+                </p>
+              )}
               <div className="space-y-1">
                 {q.options.map((opt) => (
                   <label key={opt.id} className="block text-sm">

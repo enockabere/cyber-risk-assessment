@@ -21,41 +21,73 @@ export async function POST(req: Request) {
 
   const { answers } = await req.json();
 
-  if (!answers || !Array.isArray(answers)) {
+  if (
+    !answers ||
+    !Array.isArray(answers) ||
+    answers.some(
+      (a) =>
+        typeof a !== "object" ||
+        typeof a.questionId !== "string" ||
+        typeof a.selectedOptionId !== "string" ||
+        a.selectedOptionId.trim() === ""
+    )
+  ) {
     return NextResponse.json(
-      { error: "Invalid answer payload" },
+      { error: "Invalid or incomplete answer payload" },
       { status: 400 }
     );
   }
 
   try {
-    // Store answers under a new Submission
-    const submission = await prisma.submission.create({
-      data: {
-        userId: user.id,
-        backgroundData: {}, // Optional: store related background info here
-        answers: {
-          create: answers.map(
-            (ans: { questionId: string; selectedOptionId: string }) => ({
-              questionId: ans.questionId,
-              selectedOptionId: ans.selectedOptionId,
-            })
-          ),
-        },
-      },
-      include: {
-        answers: true,
+    // Optional: Ensure all questions were answered
+    const totalQuestions = await prisma.question.count({
+      where: {
+        OR: [
+          { assetId: null }, // background questions
+          {
+            asset: {
+              universities: {
+                some: { universityUserId: user.id },
+              },
+            },
+          },
+        ],
       },
     });
 
+    const answeredQuestionIds = new Set(answers.map((a) => a.questionId));
+
+    if (answeredQuestionIds.size < totalQuestions) {
+      return NextResponse.json(
+        {
+          error: `Please answer all ${totalQuestions} questions before submitting.`,
+        },
+        { status: 400 }
+      );
+    }
+
+    const submission = await prisma.submission.create({
+      data: {
+        userId: user.id,
+        backgroundData: {}, // Add custom background info if needed
+        answers: {
+          create: answers.map((a) => ({
+            questionId: a.questionId,
+            selectedOptionId: a.selectedOptionId,
+          })),
+        },
+      },
+      include: { answers: true },
+    });
+
     return NextResponse.json({
-      message: "Submission recorded successfully",
+      message: "Assessment submitted successfully.",
       submissionId: submission.id,
     });
-  } catch (err) {
-    console.error("❌ Error saving assessment answers:", err);
+  } catch (error) {
+    console.error("❌ Submission error:", error);
     return NextResponse.json(
-      { error: "Failed to save assessment" },
+      { error: "Failed to save assessment answers." },
       { status: 500 }
     );
   }

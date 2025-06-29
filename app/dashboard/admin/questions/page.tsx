@@ -18,6 +18,7 @@ interface Question {
   id: string;
   text: string;
   position: number;
+  asset?: { id: string; name: string };
   options: {
     text: string;
     probability?: string;
@@ -109,9 +110,17 @@ export default function QuestionsPage() {
             <li key={q.id} className="p-4 border rounded bg-gray-50 space-y-2">
               <div className="flex justify-between items-start">
                 <div>
-                  <span className="font-semibold">{q.position}. </span>
-                  <span>{q.text}</span>
+                  <div>
+                    <span className="font-semibold">{q.position}. </span>
+                    <span>{q.text}</span>
+                  </div>
+                  {q.asset && (
+                    <div className="text-sm text-green-700 font-medium mt-1">
+                      🏷️ Asset-Specific: {q.asset.name}
+                    </div>
+                  )}
                 </div>
+
                 <div className="space-x-2">
                   <Button
                     size="sm"

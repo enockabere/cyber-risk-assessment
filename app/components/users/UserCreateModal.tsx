@@ -52,7 +52,7 @@ export default function UserCreateModal({ open, onClose, onCreate }: Props) {
         }),
       });
       const contentType = res.headers.get("content-type") || "";
-      let data: any;
+      let data: { user?: AppUser; message?: string };
 
       if (contentType.includes("application/json")) {
         data = await res.json();
@@ -79,9 +79,11 @@ export default function UserCreateModal({ open, onClose, onCreate }: Props) {
       setName("");
       setRole("respondent");
       onClose();
-    } catch (error: any) {
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Failed to create user";
       console.error("❌ Error during registration:", error);
-      Swal.fire("Error", error.message || "Failed to create user", "error");
+      Swal.fire("Error", message, "error");
     } finally {
       setLoading(false);
     }
@@ -100,30 +102,56 @@ export default function UserCreateModal({ open, onClose, onCreate }: Props) {
 
         <div className="space-y-4">
           <div className="space-y-1">
-            <Label htmlFor="email">Email</Label>
+            <Label className="my-2" htmlFor="name">
+              University
+            </Label>
+            <select
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm px-3 py-2"
+            >
+              <option value="">Select University</option>
+              <option value="University of Nairobi">
+                University of Nairobi
+              </option>
+              <option value="Kenyatta University">Kenyatta University</option>
+              <option value="Strathmore University">
+                Strathmore University
+              </option>
+              <option value="Jomo Kenyatta University of Agriculture and Technology">
+                JKUAT
+              </option>
+              <option value="United States International University - Africa">
+                USIU-Africa
+              </option>
+              <option value="Africa Nazarene University">
+                Africa Nazarene University
+              </option>
+              <option value="Catholic University of Eastern Africa">
+                CUEA
+              </option>
+            </select>
+          </div>
+
+          <div className="space-y-1">
+            <Label className="my-2" htmlFor="email">
+              Email
+            </Label>
             <Input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@university.edu"
-              className="bg-white"
+              className="pl-8 h-9 text-sm text-black rounded-md bg-gray-50 focus:bg-white border-gray-200 focus:ring-2 focus:ring-green-500 transition-all duration-200"
             />
           </div>
 
           <div className="space-y-1">
-            <Label htmlFor="name">University</Label>
-            <Input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Full Name"
-              className="bg-white"
-            />
-          </div>
-
-          <div className="space-y-1">
-            <Label htmlFor="role">Role</Label>
+            <Label className="my-2" htmlFor="role">
+              Role
+            </Label>
             <Select value={role} onValueChange={setRole}>
               <SelectTrigger
                 id="role"

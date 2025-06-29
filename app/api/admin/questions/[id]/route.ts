@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 
+interface RiskOptionInput {
+  text: string;
+  probability?: string;
+  impact?: string;
+  controlDescription?: string;
+  residualProbability?: string;
+  residualImpact?: string;
+}
+
 export async function PATCH(
   req: NextRequest,
   context: { params: { id: string } }
@@ -14,9 +23,10 @@ export async function PATCH(
       data: {
         text: body.text,
         position: body.position,
+        assetId: body.assetId || null, // ✅ add this
         options: {
-          deleteMany: {}, // Clear old options
-          create: body.options.map((opt: any) => ({
+          deleteMany: {}, // Clear old
+          create: (body.options as RiskOptionInput[]).map((opt) => ({
             text: opt.text,
             probability: opt.probability || null,
             impact: opt.impact || null,
@@ -29,8 +39,8 @@ export async function PATCH(
     });
 
     return NextResponse.json(updated);
-  } catch (err) {
-    console.error("❌ Failed to update question:", err);
+  } catch (error: unknown) {
+    console.error("❌ Failed to update question:", error);
     return NextResponse.json(
       { error: "Failed to update question" },
       { status: 500 }
@@ -47,7 +57,7 @@ export async function DELETE(
       where: { id: params.id },
     });
     return NextResponse.json({ message: "Deleted successfully" });
-  } catch (err) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to delete question" },
       { status: 500 }

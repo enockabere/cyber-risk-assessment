@@ -27,10 +27,10 @@ export default function UsersPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   useEffect(() => {
-    setTitle("User Management");
+    setTitle("University Management");
     setBreadcrumbs([
       { label: "Dashboard", href: "/dashboard" },
-      { label: "Users", href: "/dashboard/admin/users" },
+      { label: "Universities", href: "/dashboard/admin/users" },
     ]);
   }, []);
 
@@ -85,8 +85,6 @@ export default function UsersPage() {
     showUserViewModal(user);
   };
 
-  const uniqueRoles = Array.from(new Set(users.map((user) => user.role)));
-
   return (
     <div className="p-9 rounded-md space-y-9 bg-white min-h-screen">
       {/* Header */}
@@ -95,25 +93,26 @@ export default function UsersPage() {
           <Users className="h-5 w-5 text-green-600" />
           <div>
             <p className="text-gray-600">
-              Manage and monitor all users in your system
+              Manage and monitor cyber security risk assessment portal{" "}
+              <span className="font-semibold">universities</span>
             </p>
           </div>
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <UserStatsCard
-          title="Total Users"
+          title="Total Universities"
           value={users.length}
-          description="All registered users"
+          description="All registered institutions"
           icon={Users}
           iconColor="indigo"
           bgColor="indigo"
           borderColor="indigo"
         />
         <UserStatsCard
-          title="Active Users"
+          title="Active Universities"
           value={users.filter((u) => u.status === "active").length}
-          description="Currently active"
+          description="Currently engaged"
           icon={User}
           iconColor="emerald"
           bgColor="emerald"
@@ -122,7 +121,7 @@ export default function UsersPage() {
         <UserStatsCard
           title="Admins"
           value={users.filter((u) => u.role === "admin").length}
-          description="Admin privileges"
+          description="University administrators"
           icon={Shield}
           iconColor="amber"
           bgColor="amber"
@@ -138,14 +137,13 @@ export default function UsersPage() {
                   new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
             ).length
           }
-          description="Last 30 days"
+          description="Recently onboarded universities"
           icon={UserPlus}
           iconColor="violet"
           bgColor="violet"
           borderColor="violet"
         />
       </div>
-      {/* Main Table Card */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b border-gray-200 dark:border-gray-800">
           <div className="flex items-center gap-2">
@@ -153,7 +151,7 @@ export default function UsersPage() {
               <User className="h-5 w-5 text-green-600 dark:text-green-400" />
             </div>
             <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
-              All Users
+              All Universities
             </CardTitle>
           </div>
           <div className="flex items-center gap-2">
@@ -163,7 +161,7 @@ export default function UsersPage() {
               className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-green-600 dark:hover:text-green-400 transition-colors"
             >
               <Download className="h-4 w-4 mr-2" />
-              Export
+              Export Universities
             </Button>
             <Button
               size="sm"
@@ -171,14 +169,14 @@ export default function UsersPage() {
               className="bg-green-600 hover:bg-green-700 text-white"
             >
               <Plus className="h-4 w-4 mr-2" />
-              Add User
+              Add University
             </Button>
           </div>
         </CardHeader>
 
         <CardContent className="p-0">
           <div className="px-6 py-3 bg-gray-50 border-b text-sm text-gray-600">
-            Showing {filteredUsers.length} of {users.length} users
+            Showing {filteredUsers.length} of {users.length} universities
           </div>
 
           <UserTable

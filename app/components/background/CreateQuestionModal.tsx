@@ -36,7 +36,16 @@ export default function CreateQuestionModal({ onSuccess, existing }: Props) {
       residualImpact: "",
     },
   ]);
+  const [assetId, setAssetId] = useState<string | null>(null);
+  const [assets, setAssets] = useState<{ id: string; name: string }[]>([]);
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/assets")
+      .then((res) => res.json())
+      .then(setAssets)
+      .catch(console.error);
+  }, []);
 
   useEffect(() => {
     if (existing) {
@@ -79,6 +88,7 @@ export default function CreateQuestionModal({ onSuccess, existing }: Props) {
     const payload = {
       text,
       position,
+      assetId,
       options,
     };
 
@@ -121,6 +131,22 @@ export default function CreateQuestionModal({ onSuccess, existing }: Props) {
           value={position}
           onChange={(e) => setPosition(Number(e.target.value))}
         />
+      </div>
+
+      <div>
+        <label className="text-sm font-medium">Link to Asset (optional)</label>
+        <select
+          className="w-full p-2 border rounded mt-1"
+          value={assetId || ""}
+          onChange={(e) => setAssetId(e.target.value || null)}
+        >
+          <option value="">General Cyber Risk Question</option>
+          {assets.map((asset) => (
+            <option key={asset.id} value={asset.id}>
+              {asset.name}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="space-y-4">

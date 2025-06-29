@@ -19,36 +19,56 @@ export async function GET() {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  // Find latest submission by the user
+  const userAssets = await prisma.universityAsset.findMany({
+    where: { universityUserId: user.id },
+    select: { assetId: true },
+  });
+
+  const ownedAssetIds = userAssets.map((ua) => ua.assetId);
+
   const latestSubmission = await prisma.submission.findFirst({
     where: { userId: user.id },
     orderBy: { createdAt: "desc" },
     include: {
       answers: {
         include: {
-          question: true,
           selectedOption: true,
         },
       },
     },
   });
 
-  // Get all questions
+  const answersMap = new Map(
+    latestSubmission?.answers.map((ans) => [
+      ans.questionId,
+      ans.selectedOptionId,
+    ]) || []
+  );
+
   const questions = await prisma.question.findMany({
+    where: {
+      OR: [{ assetId: null }, { assetId: { in: ownedAssetIds } }],
+    },
     orderBy: { position: "asc" },
     include: {
       options: true,
+      asset: {
+        select: { name: true },
+      },
     },
   });
 
-  const answersMap = new Map();
-  latestSubmission?.answers.forEach((ans) => {
-    answersMap.set(ans.questionId, ans.selectedOptionId);
-  });
-
   const enrichedQuestions = questions.map((q) => ({
-    ...q,
+    id: q.id,
+    text: q.text,
+    position: q.position,
+    options: q.options.map((opt) => ({
+      id: opt.id,
+      text: opt.text,
+    })),
     selectedOptionId: answersMap.get(q.id) || null,
+    isAssetLinked: !!q.assetId,
+    assetName: q.asset?.name || null,
   }));
 
   return NextResponse.json({ questions: enrichedQuestions });

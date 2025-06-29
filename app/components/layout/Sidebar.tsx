@@ -9,6 +9,7 @@ import {
   ScrollText,
   UsersRound,
   LogOut,
+  Package,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -36,7 +37,7 @@ export default function Sidebar() {
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full bg-white border-r border-gray-200 w-64 p-4 space-y-2">
-      <div className="text-xl font-bold text-green-600 px-2">CRAP</div>
+      <div className="text-xl font-bold text-green-600 px-2">CSRAP</div>
 
       <nav className="flex-1 flex flex-col space-y-1 mt-6">
         {/* Dashboard */}
@@ -51,6 +52,20 @@ export default function Sidebar() {
           <LayoutDashboard className="w-4 h-4" />
           Dashboard
         </button>
+
+        {isRespondent && (
+          <button
+            onClick={() => handleNavClick("/dashboard/assets")}
+            className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm w-full text-left transition ${
+              pathname.startsWith("/dashboard/assets")
+                ? "bg-green-100 text-green-700 font-semibold"
+                : "text-gray-700 hover:bg-green-50 hover:text-green-600"
+            }`}
+          >
+            <Package className="w-4 h-4" />
+            My Assets
+          </button>
+        )}
 
         {/* Risk Assessment */}
         {isRespondent && (
@@ -83,19 +98,58 @@ export default function Sidebar() {
           </button>
         )}
 
+        {isRespondent && (
+          <button
+            onClick={() => handleNavClick("/dashboard/reports")}
+            className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm w-full text-left transition ${
+              pathname.startsWith("/dashboard/reports")
+                ? "bg-green-100 text-green-700 font-semibold"
+                : "text-gray-700 hover:bg-green-50 hover:text-green-600"
+            }`}
+          >
+            <FileBarChart2 className="w-4 h-4" />
+            Reports
+          </button>
+        )}
+
         {/* Admin-only links */}
         {isAdmin && (
           <>
             <button
               onClick={() => handleNavClick("/dashboard/admin/background")}
               className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm w-full text-left transition ${
-                pathname.startsWith("/dashboard/admin/background")
+                pathname.startsWith("/dashboard/admin/background") ||
+                pathname.startsWith("/dashboard/admin/questions")
                   ? "bg-green-100 text-green-700 font-semibold"
                   : "text-gray-700 hover:bg-green-50 hover:text-green-600"
               }`}
             >
               <ShieldCheck className="w-4 h-4" />
               Risk Descriptions
+            </button>
+
+            <button
+              onClick={() => handleNavClick("/dashboard/admin/assets")}
+              className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm w-full text-left transition ${
+                pathname.startsWith("/dashboard/admin/assets")
+                  ? "bg-green-100 text-green-700 font-semibold"
+                  : "text-gray-700 hover:bg-green-50 hover:text-green-600"
+              }`}
+            >
+              <Package className="w-4 h-4" />
+              Asset Management
+            </button>
+
+            <button
+              onClick={() => handleNavClick("/dashboard/admin/reports")}
+              className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm w-full text-left transition ${
+                pathname.startsWith("/dashboard/admin/reports")
+                  ? "bg-green-100 text-green-700 font-semibold"
+                  : "text-gray-700 hover:bg-green-50 hover:text-green-600"
+              }`}
+            >
+              <FileBarChart2 className="w-4 h-4" />
+              Submissions
             </button>
 
             <button

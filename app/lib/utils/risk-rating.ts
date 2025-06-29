@@ -1,7 +1,23 @@
 // app/lib/utils/risk-rating.ts
 
-export type RiskLevel = "VERY_LOW" | "LOW" | "MEDIUM" | "HIGH" | "VERY_HIGH";
-export type RiskRating = "SUSTAINABLE" | "MODERATE" | "SEVERE" | "CRITICAL";
+export const RiskLevel = {
+  VERY_LOW: "VERY_LOW",
+  LOW: "LOW",
+  MEDIUM: "MEDIUM",
+  HIGH: "HIGH",
+  VERY_HIGH: "VERY_HIGH",
+} as const;
+
+export type RiskLevel = keyof typeof RiskLevel;
+
+export const RiskRating = {
+  SUSTAINABLE: "SUSTAINABLE",
+  MODERATE: "MODERATE",
+  SEVERE: "SEVERE",
+  CRITICAL: "CRITICAL",
+} as const;
+
+export type RiskRating = keyof typeof RiskRating;
 
 /**
  * Calculates the risk rating based on probability and impact

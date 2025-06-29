@@ -7,7 +7,6 @@ import { Loader2 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useTopbar } from "@/app/context/TopbarContext";
 import { useBreadcrumbs } from "@/app/context/BreadcrumbContext";
 
@@ -17,6 +16,12 @@ interface BackgroundField {
   fieldType: string;
   options: string[];
   response: string | null;
+}
+
+interface SelectedAssetResponse {
+  asset: {
+    name: string;
+  };
 }
 
 export default function AssessmentPage() {
@@ -30,6 +35,8 @@ export default function AssessmentPage() {
   const { setTitle } = useTopbar();
   const { setBreadcrumbs } = useBreadcrumbs();
   const [navigating, setNavigating] = useState(false);
+  const [showAssetsPreview, setShowAssetsPreview] = useState(false);
+  const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
 
   useEffect(() => {
     setTitle("Cybersecurity Assessment");
@@ -47,6 +54,13 @@ export default function AssessmentPage() {
 
         setCompleted(data.completed);
         setFields(data.fields);
+
+        if (data.completed) {
+          const res = await fetch("/api/assets/selected");
+          const selected: SelectedAssetResponse[] = await res.json();
+          setSelectedAssets(selected.map((a) => a.asset.name));
+          setShowAssetsPreview(true);
+        }
 
         const initial: Record<string, string> = {};
         data.fields.forEach((f: BackgroundField) => {
@@ -116,6 +130,61 @@ export default function AssessmentPage() {
       {loading ? (
         <div className="flex justify-center py-12">
           <Loader2 className="w-6 h-6 animate-spin text-green-500" />
+        </div>
+      ) : completed && showAssetsPreview ? (
+        <div className="space-y-4 pt-4">
+          <h2 className="text-xl font-semibold text-green-700">
+            ✅ Background Info Completed
+          </h2>
+          <p className="text-gray-600">These are your selected assets:</p>
+
+          <div className="bg-gray-50 border rounded p-4 space-y-2 max-h-60 overflow-y-auto">
+            {selectedAssets.length > 0 ? (
+              selectedAssets.map((name, i) => (
+                <p key={i} className="text-sm text-gray-800">
+                  • {name}
+                </p>
+              ))
+            ) : (
+              <p className="text-sm text-gray-500">No assets selected yet.</p>
+            )}
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4 pt-2">
+            <Button
+              className="bg-green-600 text-white hover:bg-green-700"
+              disabled={navigating}
+              onClick={() => {
+                setNavigating(true);
+                router.push("/dashboard/questions");
+              }}
+            >
+              {navigating ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Redirecting...
+                </>
+              ) : (
+                "Continue to Assessment"
+              )}
+            </Button>
+
+            <Button
+              variant="outline"
+              className="border-green-600 text-green-700 hover:bg-green-50"
+              onClick={() => router.push("/dashboard/assets")}
+            >
+              Edit Assets
+            </Button>
+
+            <Button
+              variant="ghost"
+              className="bg-black text-white hover:bg-emerald-700"
+              onClick={() => setCompleted(false)}
+            >
+              Edit Background Info
+            </Button>
+          </div>
         </div>
       ) : completed ? (
         <div className="text-center space-y-4 pt-4">

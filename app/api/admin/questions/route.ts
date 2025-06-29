@@ -1,7 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 
-// POST: Create a new question
+interface RiskOptionInput {
+  text: string;
+  probability?: string;
+  impact?: string;
+  controlDescription?: string;
+  residualProbability?: string;
+  residualImpact?: string;
+}
+
 export async function POST(req: NextRequest) {
   const body = await req.json();
 
@@ -10,8 +18,9 @@ export async function POST(req: NextRequest) {
       data: {
         text: body.text,
         position: body.position,
+        assetId: body.assetId || null,
         options: {
-          create: body.options.map((opt: any) => ({
+          create: (body.options as RiskOptionInput[]).map((opt) => ({
             text: opt.text,
             probability: opt.probability || null,
             impact: opt.impact || null,
@@ -39,6 +48,7 @@ export async function GET() {
       orderBy: { position: "asc" },
       include: {
         options: true,
+        asset: { select: { id: true, name: true } },
       },
     });
 

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useTopbar } from "@/app/context/TopbarContext";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
-import { ClipboardList, BarChart2, AlertTriangle } from "lucide-react";
+import { ClipboardList, Package } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import RespondentStats from "../components/users/RespondentStats";
 
@@ -13,9 +13,14 @@ export default function DashboardPage() {
   const { data: session } = useSession();
 
   const [stats, setStats] = useState({
+    totalUsers: 0,
+    totalRespondents: 0,
     totalSubmissions: 0,
     averageRiskScore: 0,
     flaggedAlerts: 0,
+    totalAssets: 0,
+    assessedAssets: 0,
+    unassessedAssets: 0,
   });
 
   useEffect(() => {
@@ -36,23 +41,24 @@ export default function DashboardPage() {
   }, [setTitle, session]);
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       {session?.user.role === "ADMIN" ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <StatCard
-            title="Total Submissions"
+            title="Universities"
+            value={stats.totalRespondents}
+            icon={<ClipboardList className="text-sky-600" />}
+          />
+
+          <StatCard
+            title="CSRAP Submissions"
             value={stats.totalSubmissions}
             icon={<ClipboardList className="text-green-600" />}
           />
           <StatCard
-            title="Average Risk Score"
-            value={stats.averageRiskScore.toFixed(2)}
-            icon={<BarChart2 className="text-amber-500" />}
-          />
-          <StatCard
-            title="Flagged Alerts"
-            value={stats.flaggedAlerts}
-            icon={<AlertTriangle className="text-red-600" />}
+            title="Total Assets"
+            value={stats.totalAssets}
+            icon={<Package className="text-indigo-600" />}
           />
         </div>
       ) : (

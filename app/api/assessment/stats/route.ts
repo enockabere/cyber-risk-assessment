@@ -3,7 +3,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import prisma from "@/app/lib/prisma";
 
-// Type-safe enums
 type RiskLevel = "VERY_LOW" | "LOW" | "MEDIUM" | "HIGH" | "VERY_HIGH";
 type RiskRating = "SUSTAINABLE" | "MODERATE" | "SEVERE" | "CRITICAL";
 
@@ -86,12 +85,17 @@ export async function GET() {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  const [backgroundFieldsCount, backgroundResponsesCount, totalQuestions] =
-    await Promise.all([
-      prisma.backgroundField.count(),
-      prisma.backgroundResponse.count({ where: { userId: user.id } }),
-      prisma.question.count(),
-    ]);
+  const [
+    backgroundFieldsCount,
+    backgroundResponsesCount,
+    totalQuestions,
+    assetCount,
+  ] = await Promise.all([
+    prisma.backgroundField.count(),
+    prisma.backgroundResponse.count({ where: { userId: user.id } }),
+    prisma.question.count(),
+    prisma.universityAsset.count({ where: { universityUserId: user.id } }), // ✅ new
+  ]);
 
   const backgroundCompleted =
     backgroundResponsesCount === backgroundFieldsCount;
@@ -134,8 +138,6 @@ export async function GET() {
     averageRating = normalizeRating(orderedRatings[avgIndex]);
   }
 
-  console.log("averageRating:", averageRating);
-
   return NextResponse.json({
     totalQuestions,
     answeredQuestions,
@@ -143,5 +145,6 @@ export async function GET() {
     allQuestionsAnswered,
     lastSubmissionDate,
     averageRating,
+    assetCount,
   });
 }

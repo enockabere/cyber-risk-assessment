@@ -158,20 +158,22 @@ export function UserStatsCard({
   bgColor,
   borderColor,
 }: UserStatsCardProps) {
-  const colors = colorMap[iconColor]; // Using iconColor for all colors to maintain consistency
+  const iconColors = colorMap[iconColor];
+  const backgroundColors = colorMap[bgColor];
+  const borderColors = colorMap[borderColor]; // Using iconColor for all colors to maintain consistency
 
   return (
     <Card
-      className={`group relative overflow-hidden bg-gradient-to-br ${colors.bgFrom} via-white ${colors.bgTo} ${colors.border} shadow-sm hover:shadow-lg transition-all duration-300`}
+      className={`group relative overflow-hidden bg-gradient-to-br ${backgroundColors.bgFrom} via-white ${backgroundColors.bgTo} border ${borderColors.border} shadow-sm hover:shadow-lg transition-all duration-300 rounded-xl`}
     >
       <div
-        className={`absolute inset-0 bg-gradient-to-br ${colors.gradientFrom} via-transparent ${colors.gradientTo} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+        className={`absolute inset-0 bg-gradient-to-br ${backgroundColors.gradientFrom} via-transparent ${backgroundColors.gradientTo} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
       />
       <CardContent className="p-6 relative">
         <div className="flex items-center justify-between">
           <div className="space-y-2">
             <p
-              className={`text-sm font-medium ${colors.textColor} tracking-wide uppercase`}
+              className={`text-sm font-medium ${iconColors.textColor} tracking-wide uppercase`}
             >
               {title}
             </p>
@@ -180,19 +182,19 @@ export function UserStatsCard({
             </p>
             <div className="flex items-center gap-1 text-xs text-gray-500">
               <div
-                className={`w-2 h-2 ${colors.dotColor} rounded-full animate-pulse`}
+                className={`w-2 h-2 ${iconColors.dotColor} rounded-full animate-pulse`}
               />
               {description}
             </div>
           </div>
           <div className="relative">
             <div
-              className={`h-14 w-14 bg-gradient-to-br ${colors.iconBgFrom} ${colors.iconBgTo} rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-300 group-hover:scale-105`}
+              className={`h-14 w-14 bg-gradient-to-br ${iconColors.iconBgFrom} ${iconColors.iconBgTo} rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-300 group-hover:scale-105`}
             >
-              <Icon className={`h-7 w-7 ${colors.iconColor}`} />
+              <Icon className={`h-7 w-7 ${iconColors.iconColor}`} />
             </div>
             <div
-              className={`absolute -top-1 -right-1 w-4 h-4 ${colors.dotColor} rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+              className={`absolute -top-1 -right-1 w-4 h-4 ${iconColors.dotColor} rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
             />
           </div>
         </div>

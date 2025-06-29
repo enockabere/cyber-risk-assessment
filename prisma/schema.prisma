@@ -46,7 +46,10 @@ model User {
 
   submissions         Submission[]
   backgroundResponses BackgroundResponse[]
+
+  universityAssets    UniversityAsset[] 
 }
+
 
 model BackgroundField {
   id        String    @id @default(uuid())
@@ -79,6 +82,9 @@ model Question {
 
   backgroundFieldId String?
   backgroundField   BackgroundField? @relation(fields: [backgroundFieldId], references: [id])
+
+  assetId String?
+  asset   Asset? @relation(fields: [assetId], references: [id])
 
   options  RiskOption[]
   Answer   Answer[]
@@ -122,4 +128,53 @@ model Answer {
   question       Question   @relation(fields: [questionId], references: [id])
   selectedOption RiskOption @relation(fields: [selectedOptionId], references: [id])
   submission     Submission @relation(fields: [submissionId], references: [id])
+}
+
+model Asset {
+  id          String     @id @default(uuid())
+  name        String     @unique
+  description String?
+
+  threats     Threat[]
+  universities UniversityAsset[] // pivot
+
+  questions   Question[] 
+}
+
+
+model UniversityAsset {
+  id               String   @id @default(uuid())
+  universityUserId String
+  assetId          String
+  hasBeenAssessed  Boolean  @default(false)
+  assessmentStatus String   @default("Pending") // e.g. Completed, In Progress
+  riskRating       RiskRating?
+  residualRisk     RiskRating?
+  notes            String?
+  createdAt        DateTime @default(now())
+
+  universityUser User  @relation(fields: [universityUserId], references: [id])
+  asset          Asset @relation(fields: [assetId], references: [id])
+
+  @@unique([universityUserId, assetId])
+}
+
+
+model Threat {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  riskLevel   RiskLevel
+  assetId     String
+
+  asset       Asset    @relation(fields: [assetId], references: [id])
+  mitigations MitigationStrategy[]
+}
+
+model MitigationStrategy {
+  id          String   @id @default(uuid())
+  description String
+  threatId    String
+
+  threat Threat @relation(fields: [threatId], references: [id])
 }
