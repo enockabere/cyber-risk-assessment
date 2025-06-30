@@ -23,14 +23,13 @@ import {
 
 export default function Topbar() {
   const { title } = useTopbar();
-  const { breadcrumbs } = useBreadcrumbs(); // ✅ FIXED: get breadcrumbs from context
+  const { breadcrumbs } = useBreadcrumbs();
   const { data: session } = useSession();
   const user = session?.user;
   const role = user?.role || "Unknown";
 
   return (
     <header className="w-full bg-gradient-to-r from-green-50 to-white border-b border-green-100 px-6 py-4 flex items-center justify-between shadow-sm">
-      {/* Title & Breadcrumbs */}
       <div className="flex flex-col gap-1">
         <h4 className="text-2xl font-bold text-green-900 tracking-tight">
           {title}
@@ -55,8 +54,6 @@ export default function Topbar() {
           ))}
         </nav>
       </div>
-
-      {/* Profile Dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger className="flex items-center gap-2 outline-none">
           {role.toLowerCase() === "respondent" && (

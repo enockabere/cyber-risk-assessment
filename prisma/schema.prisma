@@ -55,7 +55,7 @@ model BackgroundField {
   id        String    @id @default(uuid())
   label     String
   fieldType FieldType
-  options   String[] // For dropdown values
+  options   String[] 
 
   questions Question[]
   responses BackgroundResponse[]
@@ -71,7 +71,7 @@ model BackgroundResponse {
   user  User            @relation(fields: [userId], references: [id])
   field BackgroundField @relation(fields: [fieldId], references: [id])
 
-  @@unique([userId, fieldId]) // each user can respond only once per field
+  @@unique([userId, fieldId])
 }
 
 model Question {
@@ -136,7 +136,7 @@ model Asset {
   description String?
 
   threats     Threat[]
-  universities UniversityAsset[] // pivot
+  universities UniversityAsset[] 
 
   questions   Question[] 
 }
@@ -147,7 +147,7 @@ model UniversityAsset {
   universityUserId String
   assetId          String
   hasBeenAssessed  Boolean  @default(false)
-  assessmentStatus String   @default("Pending") // e.g. Completed, In Progress
+  assessmentStatus String   @default("Pending") 
   riskRating       RiskRating?
   residualRisk     RiskRating?
   notes            String?

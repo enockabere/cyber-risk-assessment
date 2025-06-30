@@ -40,7 +40,6 @@ export default function Sidebar() {
       <div className="text-xl font-bold text-green-600 px-2">CSRAP</div>
 
       <nav className="flex-1 flex flex-col space-y-1 mt-6">
-        {/* Dashboard */}
         <button
           onClick={() => handleNavClick("/dashboard")}
           className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm w-full text-left transition ${
@@ -66,8 +65,6 @@ export default function Sidebar() {
             My Assets
           </button>
         )}
-
-        {/* Risk Assessment */}
         {isRespondent && (
           <button
             onClick={() => handleNavClick("/dashboard/assessment")}
@@ -82,8 +79,6 @@ export default function Sidebar() {
             Risk Assessment
           </button>
         )}
-
-        {/* Assessment Results */}
         {isRespondent && (
           <button
             onClick={() => handleNavClick("/dashboard/responses")}
@@ -111,8 +106,6 @@ export default function Sidebar() {
             Reports
           </button>
         )}
-
-        {/* Admin-only links */}
         {isAdmin && (
           <>
             <button
@@ -182,8 +175,6 @@ export default function Sidebar() {
               </span>
             </div>
           </div>
-
-          {/* Tooltip on hover */}
           <div className="absolute bottom-full left-0 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 w-full">
             <div className="font-medium">{session.user.name}</div>
             <div className="text-gray-300">{session.user.email}</div>
@@ -207,7 +198,6 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Mobile Sidebar */}
       <div className="md:hidden p-4">
         <Sheet>
           <SheetTrigger asChild>
@@ -220,8 +210,6 @@ export default function Sidebar() {
           </SheetContent>
         </Sheet>
       </div>
-
-      {/* Desktop Sidebar */}
       <aside className="hidden md:block">
         <SidebarContent />
       </aside>

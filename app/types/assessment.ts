@@ -12,5 +12,5 @@ export interface StatsData {
   averageRating: RiskLevel;
   backgroundCompleted: boolean;
   allQuestionsAnswered: boolean;
-  assetCount: number; // ✅ Add this
+  assetCount: number; 
 }

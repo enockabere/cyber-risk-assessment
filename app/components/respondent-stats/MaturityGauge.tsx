@@ -19,7 +19,6 @@ export default function MaturityGauge({
   maturityLevel,
   loading = false,
 }: Props) {
-  // Dynamic color based on maturity score
   const getScoreColor = (score: number): string => {
     if (score >= 80) return "text-green-600";
     if (score >= 60) return "text-yellow-600";
@@ -27,16 +26,8 @@ export default function MaturityGauge({
     return "text-red-600";
   };
 
-  // Enhanced speedometer colors - more segments for better granularity
   const getSpeedometerColors = (): string[] => {
-    // 5 segments: 0-20, 20-40, 40-60, 60-80, 80-100
-    return [
-      "#dc2626", // red (0-20) - Critical
-      "#ea580c", // orange-red (20-40) - Poor
-      "#d97706", // orange (40-60) - Basic
-      "#eab308", // yellow (60-80) - Developing
-      "#16a34a", // green (80-100) - Advanced
-    ];
+    return ["#dc2626", "#ea580c", "#d97706", "#eab308", "#16a34a"];
   };
 
   if (loading) {
@@ -77,8 +68,6 @@ export default function MaturityGauge({
           customSegmentStops={[0, 20, 40, 60, 80, 100]}
         />
       </div>
-
-      {/* Dynamic score display */}
       <div className="mt-4">
         <p className={`text-2xl font-bold ${getScoreColor(value)}`}>{value}</p>
         {maturityLevel && (
@@ -92,16 +81,12 @@ export default function MaturityGauge({
           </>
         )}
       </div>
-
-      {/* Asset count */}
       <div className="mt-4 pt-4 border-t border-gray-100">
         <div className="text-sm text-gray-600">
           Assets Assigned:{" "}
           <span className="font-semibold text-gray-800">{assetCount}</span>
         </div>
       </div>
-
-      {/* Progress indicators */}
       {value > 0 && (
         <div className="mt-4 pt-4 border-t border-gray-100">
           <div className="flex justify-between text-xs text-gray-500 mb-2">

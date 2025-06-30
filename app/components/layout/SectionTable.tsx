@@ -18,11 +18,9 @@ interface Props {
 }
 
 export default function SectionTable({ data, onEdit, onDelete }: Props) {
-  // Build a map of section ID to section
   const sectionMap = new Map<string, Section>();
   data.forEach((section) => sectionMap.set(section.id, section));
 
-  // Group sections by parentId
   const groupedByParent = new Map<string | null, Section[]>();
   data.forEach((section) => {
     const key = section.parentId || null;
@@ -40,7 +38,6 @@ export default function SectionTable({ data, onEdit, onDelete }: Props) {
     )
   );
 
-  // Generate a flat list with prefixed titles
   const numberedSections: (Section & { displayTitle: string })[] = [];
   function buildHierarchy(parentId: string | null, prefix: string = "") {
     const siblings = groupedByParent.get(parentId);
@@ -57,7 +54,7 @@ export default function SectionTable({ data, onEdit, onDelete }: Props) {
     });
   }
 
-  buildHierarchy(null); // Start from root sections
+  buildHierarchy(null);
 
   const parentMap = new Map(data.map((s) => [s.id, s.title]));
 
