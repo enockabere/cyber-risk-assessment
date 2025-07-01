@@ -183,27 +183,75 @@ export default function RegisterPage() {
                     onChange={(e) => setName(e.target.value)}
                     className="pl-8 pr-3 h-9 text-sm rounded-md bg-gray-50 focus:bg-white border-gray-200 focus:ring-2 focus:ring-green-500 transition-all duration-200 w-full appearance-none"
                   >
-                    <option value="">Select University</option>
+                    <option value="">--Select University--</option>
                     <option value="University of Nairobi">
                       University of Nairobi
                     </option>
                     <option value="Kenyatta University">
                       Kenyatta University
                     </option>
-                    <option value="Strathmore University">
-                      Strathmore University
-                    </option>
                     <option value="Jomo Kenyatta University of Agriculture and Technology">
-                      JKUAT
+                      Jomo Kenyatta University of Agriculture and Technology
                     </option>
-                    <option value="United States International University - Africa">
-                      USIU-Africa
+                    <option value="Multimedia University of Kenya">
+                      Multimedia University of Kenya
+                    </option>
+                    <option value="Catholic University of Eastern Africa (CUEA)">
+                      Catholic University of Eastern Africa (CUEA)
+                    </option>
+                    <option value="Daystar University">
+                      Daystar University
+                    </option>
+                    <option value="United States International University">
+                      United States International University
                     </option>
                     <option value="Africa Nazarene University">
                       Africa Nazarene University
                     </option>
-                    <option value="Catholic University of Eastern Africa">
-                      CUEA
+                    <option value="St. Paul’s University">
+                      St. Paul’s University
+                    </option>
+                    <option value="Pan Africa Christian University">
+                      Pan Africa Christian University
+                    </option>
+                    <option value="Strathmore University">
+                      Strathmore University
+                    </option>
+                    <option value="Africa International University">
+                      Africa International University
+                    </option>
+                    <option value="KCA University">KCA University</option>
+                    <option value="Adventist University of Africa">
+                      Adventist University of Africa
+                    </option>
+                    <option value="KAG EAST University">
+                      KAG EAST University
+                    </option>
+                    <option value="Presbyterian University of East Africa">
+                      Presbyterian University of East Africa
+                    </option>
+                    <option value="Aga Khan University">
+                      Aga Khan University
+                    </option>
+                    <option value="Kiriri Women’s University of Science and Technology">
+                      Kiriri Women’s University of Science and Technology
+                    </option>
+                    <option value="Zetech University">Zetech University</option>
+                    <option value="Management University of Africa">
+                      Management University of Africa
+                    </option>
+                    <option value="Tangaza University">
+                      Tangaza University
+                    </option>
+                    <option value="Hekima University College">
+                      Hekima University College
+                    </option>
+                    <option value="Riara University">Riara University</option>
+                    <option value="Pioneer International University">
+                      Pioneer International University
+                    </option>
+                    <option value="AMREF International University">
+                      AMREF International University
                     </option>
                   </select>
                 </div>

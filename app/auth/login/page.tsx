@@ -252,7 +252,7 @@ export default function LoginPage() {
                 href="/auth/register"
                 className="font-medium text-green-600 hover:text-green-500 transition-colors duration-200 hover:underline"
               >
-                Request access
+                Create Account
               </a>
             </div>
           </div>
@@ -264,7 +264,7 @@ export default function LoginPage() {
 const features = [
   {
     icon: <ShieldCheck className="text-green-200 w-4 h-4" />,
-    title: "Threat Detection",
+    title: "Threat Model",
     desc: "Monitor and classify potential cybersecurity risks.",
   },
   {
