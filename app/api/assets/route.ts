@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/app/lib/prisma";
+import { prisma } from "@/app/lib/prisma";
 
 // POST: Create a new asset
 export async function POST(req: NextRequest) {

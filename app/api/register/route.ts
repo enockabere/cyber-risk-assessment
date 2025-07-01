@@ -1,5 +1,5 @@
 import { hash } from "bcryptjs";
-import prisma from "@/app/lib/prisma";
+import { prisma } from "@/app/lib/prisma";
 import { NextResponse } from "next/server";
 import { UserRole } from "@prisma/client";
 

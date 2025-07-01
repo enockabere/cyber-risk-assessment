@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/app/lib/prisma";
+import { prisma } from "@/app/lib/prisma";
 import { RiskLevel } from "@/app/lib/utils/risk-rating";
 
 export async function GET(

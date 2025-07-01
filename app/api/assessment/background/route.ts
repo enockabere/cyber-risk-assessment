@@ -1,10 +1,10 @@
 // app/api/assessment/background/route.ts
-import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/app/lib/prisma";
+import { NextResponse } from "next/server";
+import { prisma } from "@/app/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
 

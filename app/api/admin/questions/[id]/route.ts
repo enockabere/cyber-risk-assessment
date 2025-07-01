@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/app/lib/prisma";
+import { prisma } from "@/app/lib/prisma";
+import { RiskLevel } from "@prisma/client";
 
 interface RiskOptionInput {
   text: string;
@@ -28,11 +29,17 @@ export async function PATCH(
           deleteMany: {}, // Clear old
           create: (body.options as RiskOptionInput[]).map((opt) => ({
             text: opt.text,
-            probability: opt.probability || null,
-            impact: opt.impact || null,
+            probability: opt.probability
+              ? (opt.probability as RiskLevel)
+              : null,
+            impact: opt.impact ? (opt.impact as RiskLevel) : null,
             controlDescription: opt.controlDescription || null,
-            residualProbability: opt.residualProbability || null,
-            residualImpact: opt.residualImpact || null,
+            residualProbability: opt.residualProbability
+              ? (opt.residualProbability as RiskLevel)
+              : null,
+            residualImpact: opt.residualImpact
+              ? (opt.residualImpact as RiskLevel)
+              : null,
           })),
         },
       },

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
-import prisma from "@/app/lib/prisma";
+import { prisma } from "@/app/lib/prisma";
 
 type RiskLevel = "VERY_LOW" | "LOW" | "MEDIUM" | "HIGH" | "VERY_HIGH";
 type RiskRating = "SUSTAINABLE" | "MODERATE" | "SEVERE" | "CRITICAL";
