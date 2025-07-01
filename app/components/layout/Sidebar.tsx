@@ -31,7 +31,7 @@ export default function Sidebar() {
 
   const isAdmin =
     session?.user?.role === "ADMIN" ||
-    session?.user?.email === "abereenock95@gmail.com";
+    session?.user?.email === "beatricej2009@gmail.com";
 
   const isRespondent = session?.user?.role === "RESPONDENT";
 
