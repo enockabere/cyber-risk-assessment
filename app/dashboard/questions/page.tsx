@@ -70,6 +70,11 @@ export default function QuestionsPage() {
   };
 
   const handleSubmitAnswers = async () => {
+    if (questions.length === 0) {
+      toast.error("No questions available to submit.");
+      return;
+    }
+
     const unanswered = questions.filter((q) => !answers[q.id]);
     if (unanswered.length > 0) {
       toast.error("Please answer all questions before submitting.");
@@ -113,51 +118,61 @@ export default function QuestionsPage() {
         </div>
       ) : (
         <>
-          {questions.map((q) => (
-            <div key={q.id} className="space-y-2 border-b pb-4">
-              <p className="font-medium text-gray-800">
-                {q.position}. {q.text}
-              </p>
-              {q.isAssetLinked && q.assetName && (
-                <p className="text-xs italic text-gray-500">
-                  🔒 Asset-specific question:{" "}
-                  <span className="text-green-700 font-medium">
-                    {q.assetName}
-                  </span>
-                </p>
-              )}
-              <div className="space-y-1">
-                {q.options.map((opt) => (
-                  <label key={opt.id} className="block text-sm">
-                    <input
-                      type="radio"
-                      name={`question-${q.id}`}
-                      value={opt.id}
-                      checked={answers[q.id] === opt.id}
-                      onChange={() => handleAnswerChange(q.id, opt.id)}
-                      className="mr-2"
-                    />
-                    {opt.text}
-                  </label>
-                ))}
-              </div>
-            </div>
-          ))}
+          {questions.length === 0 ? (
+            <p className="text-center text-gray-500 italic">
+              No assessment questions available at this time.
+            </p>
+          ) : (
+            <>
+              {questions.map((q) => (
+                <div key={q.id} className="space-y-2 border-b pb-4">
+                  <p className="font-medium text-gray-800">
+                    {q.position}. {q.text}
+                  </p>
 
-          <Button
-            onClick={handleSubmitAnswers}
-            className="bg-green-600 text-white hover:bg-green-700 flex items-center justify-center"
-            disabled={submitting}
-          >
-            {submitting ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Submitting...
-              </>
-            ) : (
-              "Submit Answers"
-            )}
-          </Button>
+                  {q.isAssetLinked && q.assetName && (
+                    <p className="text-xs italic text-gray-500">
+                      🔒 Asset-specific question:{" "}
+                      <span className="text-green-700 font-medium">
+                        {q.assetName}
+                      </span>
+                    </p>
+                  )}
+
+                  <div className="space-y-1">
+                    {q.options.map((opt) => (
+                      <label key={opt.id} className="block text-sm">
+                        <input
+                          type="radio"
+                          name={`question-${q.id}`}
+                          value={opt.id}
+                          checked={answers[q.id] === opt.id}
+                          onChange={() => handleAnswerChange(q.id, opt.id)}
+                          className="mr-2"
+                        />
+                        {opt.text}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ))}
+
+              <Button
+                onClick={handleSubmitAnswers}
+                className="bg-green-600 text-white hover:bg-green-700 flex items-center justify-center"
+                disabled={submitting}
+              >
+                {submitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  "Submit Answers"
+                )}
+              </Button>
+            </>
+          )}
         </>
       )}
     </div>

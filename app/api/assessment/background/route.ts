@@ -31,7 +31,7 @@ export async function GET() {
       };
     });
 
-    const isCompleted = responses.length >= fields.length;
+    const isCompleted = fields.length > 0 && responses.length >= fields.length;
 
     return NextResponse.json({
       completed: isCompleted,

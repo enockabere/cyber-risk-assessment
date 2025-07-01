@@ -235,58 +235,69 @@ export default function AssessmentPage() {
         </div>
       ) : (
         <>
-          <h3 className="text-md font-semibold text-green-800 italic">
-            Please complete the background information to begin your assessment:
-          </h3>
-
-          <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
-            {fields.map((field) => (
-              <div key={field.id}>
-                <label className="block text-sm font-medium mb-1 text-gray-700">
-                  {field.label}
-                </label>
-                {field.fieldType === "DROPDOWN" ? (
-                  <select
-                    className="w-full border p-2 rounded"
-                    value={responses[field.id] || ""}
-                    onChange={(e) => handleChange(field.id, e.target.value)}
-                  >
-                    <option value="">-- Select --</option>
-                    {field.options.map((opt) => (
-                      <option key={opt} value={opt}>
-                        {opt}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <Input
-                    type={field.fieldType === "NUMBER" ? "number" : "text"}
-                    value={responses[field.id] || ""}
-                    onChange={(e) => handleChange(field.id, e.target.value)}
-                  />
-                )}
-              </div>
-            ))}
-
-            <div className="pt-2">
-              <Button
-                className="bg-green-600 text-white w-full flex items-center justify-center"
-                onClick={handleSubmit}
-                disabled={
-                  Object.keys(responses).length < fields.length || submitting
-                }
-              >
-                {submitting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Submitting...
-                  </>
-                ) : (
-                  "Submit Background Info"
-                )}
-              </Button>
+          {fields.length === 0 ? (
+            <div className="text-center text-gray-500 italic">
+              No background questions available at this time.
             </div>
-          </form>
+          ) : (
+            <>
+              <h3 className="text-md font-semibold text-green-800 italic">
+                Please complete the background information to begin your
+                assessment:
+              </h3>
+
+              <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+                {fields.map((field) => (
+                  <div key={field.id}>
+                    <label className="block text-sm font-medium mb-1 text-gray-700">
+                      {field.label}
+                    </label>
+
+                    {field.fieldType === "DROPDOWN" ? (
+                      <select
+                        className="w-full border p-2 rounded"
+                        value={responses[field.id] || ""}
+                        onChange={(e) => handleChange(field.id, e.target.value)}
+                      >
+                        <option value="">-- Select --</option>
+                        {field.options.map((opt) => (
+                          <option key={opt} value={opt}>
+                            {opt}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <Input
+                        type={field.fieldType === "NUMBER" ? "number" : "text"}
+                        value={responses[field.id] || ""}
+                        onChange={(e) => handleChange(field.id, e.target.value)}
+                      />
+                    )}
+                  </div>
+                ))}
+
+                <div className="pt-2">
+                  <Button
+                    className="bg-green-600 text-white w-full flex items-center justify-center"
+                    onClick={handleSubmit}
+                    disabled={
+                      Object.keys(responses).length < fields.length ||
+                      submitting
+                    }
+                  >
+                    {submitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Submitting...
+                      </>
+                    ) : (
+                      "Submit Background Info"
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </>
+          )}
         </>
       )}
     </div>

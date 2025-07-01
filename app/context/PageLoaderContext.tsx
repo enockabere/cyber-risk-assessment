@@ -20,9 +20,8 @@ export function PageLoaderProvider({
   const showLoader = () => setIsLoading(true);
   const hideLoader = () => setIsLoading(false);
 
-  // Auto-hide loader on route change complete
   useEffect(() => {
-    setIsLoading(false); // Hide loader when pathname changes
+    setIsLoading(false); 
   }, [pathname]);
 
   return (
