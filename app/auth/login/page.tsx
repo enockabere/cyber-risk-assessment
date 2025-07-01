@@ -282,6 +282,11 @@ const features = [
     title: "Privacy & Control",
     desc: "Your data is encrypted and never shared.",
   },
+  {
+    icon: <FileBarChart2 className="text-green-200 w-4 h-4" />,
+    title: "Asset Intelligence",
+    desc: "Analyze your assets to identify vulnerabilities and security threats.",
+  },
 ];
 
 function FeatureCard({
