@@ -14,17 +14,15 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-    const userFromSameUniversity = await prisma.user.findFirst({
-      where: {
-        name: name,
-      },
+
+    // ✅ Check if email already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
     });
 
-    if (userFromSameUniversity) {
+    if (existingUser) {
       return NextResponse.json(
-        {
-          message: `${name} has already been registered. Only one account per university is allowed.`,
-        },
+        { message: "This email is already registered." },
         { status: 409 }
       );
     }
@@ -52,6 +50,7 @@ export async function POST(req: Request) {
         createdAt: true,
       },
     });
+
     return NextResponse.json({ message: "User created", user });
   } catch (error) {
     console.error("❌ Register API error:", error);
