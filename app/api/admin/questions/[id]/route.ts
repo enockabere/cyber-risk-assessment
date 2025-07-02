@@ -61,7 +61,10 @@ export async function PATCH(
   } catch (error: unknown) {
     console.error("❌ Failed to update question:", error);
     return NextResponse.json(
-      { error: "Failed to update question", detail: error instanceof Error ? error.message : String(error) },
+      {
+        error: "Failed to update question",
+        detail: error instanceof Error ? error.message : String(error),
+      },
       { status: 500 }
     );
   }
@@ -74,18 +77,17 @@ export async function DELETE(
   const { id } = context.params;
 
   try {
-    // Check if there are answers for this question
-    const hasAnswers = await prisma.answer.findFirst({
+    // Step 1: Delete answers related to this question
+    await prisma.answer.deleteMany({
       where: { questionId: id },
     });
 
-    if (hasAnswers) {
-      return NextResponse.json(
-        { error: "Cannot delete question with existing answers." },
-        { status: 400 }
-      );
-    }
+    // Step 2: Delete risk options related to this question
+    await prisma.riskOption.deleteMany({
+      where: { questionId: id },
+    });
 
+    // Step 3: Delete the question
     await prisma.question.delete({
       where: { id },
     });
@@ -94,7 +96,10 @@ export async function DELETE(
   } catch (error: unknown) {
     console.error("❌ Failed to delete question:", error);
     return NextResponse.json(
-      { error: "Failed to delete question", detail: error instanceof Error ? error.message : String(error) },
+      {
+        error: "Failed to delete question",
+        detail: error instanceof Error ? error.message : String(error),
+      },
       { status: 500 }
     );
   }

@@ -62,11 +62,24 @@ export default function LoginPage() {
       console.log("🔐 signIn response:", res);
 
       if (res?.ok) {
+        try {
+          const deleteRes = await fetch("/api/delete-questions", {
+            method: "DELETE",
+          });
+
+          const result = await deleteRes.json();
+          console.log("🗑️ Deleted questions:", result);
+
+          if (!result.success) {
+            toast.warn("Questions not deleted: " + result.message);
+          }
+        } catch (err) {
+          console.error("Failed to delete questions:", err);
+          toast.error("Failed to clean up questions.");
+        }
+
         localStorage.setItem("login_success", "1");
         router.push("/dashboard");
-      } else {
-        toast.error("Invalid email or password");
-        setLoading(false);
       }
     } catch (err) {
       console.error("Login error:", err);
