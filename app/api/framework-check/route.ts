@@ -12,20 +12,16 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: userEmail },
-    });
-
+    const user = await prisma.user.findUnique({ where: { email: userEmail } });
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    // 🔁 More reliable: get question by position
     const targetQuestion = await prisma.question.findFirst({
-      where: {
-        text: {
-          contains: "Cybersecurity Framework Adopted",
-          mode: "insensitive",
-        },
+      where: { position: 2 },
+      include: {
+        options: true,
       },
     });
 
