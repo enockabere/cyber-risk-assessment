@@ -15,18 +15,30 @@ export async function PATCH(
   req: NextRequest,
   context: { params: { id: string } }
 ) {
-  const { params } = context;
+  const { id } = context.params;
   const body = await req.json();
 
   try {
+    // Check if there are existing answers
+    const hasAnswers = await prisma.answer.findFirst({
+      where: { questionId: id },
+    });
+
+    if (hasAnswers) {
+      return NextResponse.json(
+        { error: "Cannot update question with existing answers." },
+        { status: 400 }
+      );
+    }
+
     const updated = await prisma.question.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         text: body.text,
         position: body.position,
-        assetId: body.assetId || null, // ✅ add this
+        assetId: body.assetId || null,
         options: {
-          deleteMany: {}, // Clear old
+          deleteMany: {}, // Clear existing options
           create: (body.options as RiskOptionInput[]).map((opt) => ({
             text: opt.text,
             probability: opt.probability
@@ -49,7 +61,7 @@ export async function PATCH(
   } catch (error: unknown) {
     console.error("❌ Failed to update question:", error);
     return NextResponse.json(
-      { error: "Failed to update question" },
+      { error: "Failed to update question", detail: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }
@@ -57,16 +69,32 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
+  const { id } = context.params;
+
   try {
-    await prisma.question.delete({
-      where: { id: params.id },
+    // Check if there are answers for this question
+    const hasAnswers = await prisma.answer.findFirst({
+      where: { questionId: id },
     });
+
+    if (hasAnswers) {
+      return NextResponse.json(
+        { error: "Cannot delete question with existing answers." },
+        { status: 400 }
+      );
+    }
+
+    await prisma.question.delete({
+      where: { id },
+    });
+
     return NextResponse.json({ message: "Deleted successfully" });
-  } catch {
+  } catch (error: unknown) {
+    console.error("❌ Failed to delete question:", error);
     return NextResponse.json(
-      { error: "Failed to delete question" },
+      { error: "Failed to delete question", detail: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }
