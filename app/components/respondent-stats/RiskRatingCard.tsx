@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { ShieldCheck, Target, Clock } from "lucide-react";
 import LoadingSkeleton from "./LoadingSkeleton";
 import RiskRatingVisualization from "./RiskRatingVisualization";
@@ -10,6 +11,8 @@ interface Props {
 }
 
 const RiskRatingCard = ({ rating, loading, lastSubmissionDate }: Props) => {
+  const [complianceStatus, setComplianceStatus] = useState<string | null>(null);
+
   const formattedDate = lastSubmissionDate
     ? new Date(lastSubmissionDate).toLocaleString("en-US", {
         year: "numeric",
@@ -19,6 +22,30 @@ const RiskRatingCard = ({ rating, loading, lastSubmissionDate }: Props) => {
         minute: "2-digit",
       })
     : "No submission yet";
+
+  useEffect(() => {
+    const fetchCompliance = async () => {
+      try {
+        const res = await fetch("/api/assessment/framework-check");
+        const data = await res.json();
+
+        if (!data.answered) {
+          setComplianceStatus(null); // unanswered
+        } else if (
+          data.selectedOption.toLowerCase().includes("none") ||
+          data.selectedOption.toLowerCase().includes("other")
+        ) {
+          setComplianceStatus("Not compliant with global security standards");
+        } else {
+          setComplianceStatus("Compliant with global security standards");
+        }
+      } catch (err) {
+        console.error("❌ Error fetching compliance status", err);
+      }
+    };
+
+    fetchCompliance();
+  }, []);
 
   return (
     <div className="bg-white rounded-3xl p-8 shadow border border-gray-100">
@@ -39,6 +66,11 @@ const RiskRatingCard = ({ rating, loading, lastSubmissionDate }: Props) => {
       ) : rating ? (
         <>
           <RiskRatingVisualization rating={rating} />
+          {complianceStatus && (
+            <div className="mt-4 text-sm text-center font-medium text-gray-700">
+              ✅ {complianceStatus}
+            </div>
+          )}
           <div className="mt-6 text-sm text-gray-500 text-center flex justify-center items-center gap-2">
             <Clock className="w-4 h-4" />
             Last updated: {formattedDate}
