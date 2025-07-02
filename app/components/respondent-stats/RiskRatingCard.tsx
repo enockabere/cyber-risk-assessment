@@ -26,8 +26,10 @@ const RiskRatingCard = ({ rating, loading, lastSubmissionDate }: Props) => {
   useEffect(() => {
     const fetchCompliance = async () => {
       try {
-        const res = await fetch("/api/assessment/framework-check");
+        const res = await fetch("/api/framework-check");
         const data = await res.json();
+
+        console.log(data)
 
         if (!data.answered) {
           setComplianceStatus(null); // unanswered
