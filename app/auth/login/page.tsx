@@ -90,12 +90,12 @@ export default function LoginPage() {
               <Bot className="w-6 h-6 text-white transition-all duration-300" />
             </div>
             <span className="text-2xl font-bold text-white tracking-tight">
-              CSRAP
+              CSRA MODEL
             </span>
           </div>
           <h1 className="text-3xl font-bold leading-tight tracking-tight">
             Cyber Security Risk{" "}
-            <span className="text-green-200">Assessment Portal</span>
+            <span className="text-green-200">Assessment Model</span>
           </h1>
           <p className="text-sm text-green-100 max-w-md">
             A research-driven platform for universities in Nairobi, Kenya to

@@ -27,8 +27,6 @@ interface ChartData {
 // Helper to calculate the risk rating based on probability and impact
 const calculateRiskRating = (probability?: string, impact?: string): string => {
   if (!probability || !impact) return "Unknown";
-  // This logic assumes a risk matrix exists elsewhere.
-  // Replace with your actual lookup logic if needed.
   type RiskLevel = "HIGH" | "MEDIUM" | "LOW";
   type RiskRating = "Critical" | "Severe" | "Moderate" | "Low" | "Sustainable";
 

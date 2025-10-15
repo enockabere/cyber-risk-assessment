@@ -108,7 +108,7 @@ export default function RegisterPage() {
               <Lock className="w-6 h-6 text-white transition-all duration-300" />
             </div>
             <span className="text-2xl font-bold text-white tracking-tight">
-              CSRAP
+              CSRA MODEL
             </span>
           </div>
           <h1 className="text-3xl font-bold leading-tight tracking-tight">

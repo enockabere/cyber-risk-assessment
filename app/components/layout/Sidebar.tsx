@@ -37,7 +37,7 @@ export default function Sidebar() {
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full bg-white border-r border-gray-200 w-64 p-4 space-y-2">
-      <div className="text-xl font-bold text-green-600 px-2">CSRAP</div>
+      <div className="text-xl font-bold text-green-600 px-2">CSRA MODEL</div>
 
       <nav className="flex-1 flex flex-col space-y-1 mt-6">
         <button
